@@ -1580,8 +1580,8 @@ void DisplayObjectContainer::Render( const RenderTarget &inTarget, const RenderS
                // Objects underneath a mouseEnabled=false object will register the hit
                //  first (hmm) - but if there is none, then the hit will be attributed to the
                //  parent object (this)
-               mouseDisabledObjectHit = true;
-               obj_state->mHitResult = 0;
+               //mouseDisabledObjectHit = true;
+               //obj_state->mHitResult = 0;
             }
             else
             {
@@ -1595,11 +1595,11 @@ void DisplayObjectContainer::Render( const RenderTarget &inTarget, const RenderS
       }
    }
 
-   if (mouseDisabledObjectHit)
+   /*if (mouseDisabledObjectHit)
    {
       inState.mHitResult = this;
       return;
-   }
+   }*/
 
    // Render parent at beginning or end...
    if (!parent_first)

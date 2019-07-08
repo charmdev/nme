@@ -650,7 +650,7 @@ class Platform
 
    public function copyTemplateDir(from:String, to:String, warnIfNotFound = true, ?inForOutput=true, ?inFilter:String->Bool) : Bool
    {
-      return FileHelper.recursiveCopyTemplate(project.templatePaths, from, to, context, true, warnIfNotFound, 
+	  return FileHelper.recursiveCopyTemplate(project.templatePaths, from, to, context, true, warnIfNotFound, 
           inForOutput ? addOutput : null, inFilter );
    }
    public function copyTemplate(from:String, to:String,doAddOutput=true)
@@ -665,7 +665,9 @@ class Platform
 
       copyTemplateDir( getHaxeTemplateDir(), haxeDir, true, false );
       for(path in project.templateCopies)
-         FileHelper.copyFile(path.from, getOutputDir() + "/" + path.to );
+      {
+		  FileHelper.copyFile(path.from, getOutputDir() + "/" + path.to, context, true);
+	  }
    }
 
    public function updateOutputDir()

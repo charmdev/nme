@@ -10,6 +10,10 @@
 <classpath name="src/jsprime" if="jsprime" />
 <classpath name="src/haxe/compat" unless="NME_NO_HAXE_COMPAT" />
 
+<section unless="display">
+	<dependency name="extension-api" path="templates/android/extension-api" if="android" />
+</section>
+
 <error value="Nme.n is out of date.  Please rebuild" unless="${toolversion:3}" />
 
 <set name="preloader" value="${NME}/ndll/Emscripten/preloader.js" if="std-preloader"/>

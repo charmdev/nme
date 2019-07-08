@@ -200,7 +200,9 @@ enum
    PROG_TINT =              0x0040,
    PROG_COLOUR_OFFSET =     0x0080,
 
-   PROG_COUNT =             0x0100,
+   //kukuruz
+   DRAW_SEP_ALPHA       =   0x0100,
+   PROG_COUNT 			=   0x0200,
 };
 
 

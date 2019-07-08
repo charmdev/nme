@@ -4022,6 +4022,121 @@ value nme_bitmap_data_load(value inFilename, value format)
 }
 DEFINE_PRIM(nme_bitmap_data_load,2);
 
+//kukuruz: compressed texture request =======================================================
+value nme_compressed_texture_load(value inFilename)
+{
+   Surface *surface = Surface::LoadCompressed(val_os_string(inFilename));
+   if (surface)
+   {
+      value result = ObjectToAbstract(surface);
+      surface->DecRef();
+      return result;
+   }
+   return alloc_null();
+}
+DEFINE_PRIM(nme_compressed_texture_load,1);
+
+value nme_compressed_texture_load_alpha(value inHandle, value alphaName)
+{
+   Surface *surface;
+   if (AbstractToObject(inHandle,surface))
+   {
+	   surface->LoadAlpha(val_os_string(alphaName));
+   }
+   return alloc_null();
+}
+DEFINE_PRIM(nme_compressed_texture_load_alpha,2);
+
+value nme_compressed_texture_need_alpha(value inHandle)
+{
+	Surface *surface;
+    if (AbstractToObject(inHandle,surface))
+    {
+	    return alloc_bool(surface->needAlpha());
+    }
+	return alloc_bool(false);
+}
+DEFINE_PRIM(nme_compressed_texture_need_alpha,1);
+
+value nme_compressed_texture_separate_alpha_load(value inFilename, value alphaName)
+{
+   Surface *surface = CompressedSurface::LoadCompressed(val_os_string(inFilename), val_os_string(alphaName));
+   if (surface)
+   {
+      value result = ObjectToAbstract(surface);
+      surface->DecRef();
+      return result;
+   }
+   return alloc_null();
+}
+DEFINE_PRIM(nme_compressed_texture_separate_alpha_load,2);
+
+value nme_get_gl_texture_id_from_lime_surface(value inHandle)
+{
+  Surface *surface;
+  if (AbstractToObject(inHandle,surface))
+    return alloc_int(surface -> getTextureId());
+
+  return alloc_int(0);
+}
+DEFINE_PRIM(nme_get_gl_texture_id_from_lime_surface,1);
+
+value nme_get_gl_alpha_texture_id_from_lime_surface(value inHandle)
+{
+  Surface *surface;
+  if (AbstractToObject(inHandle,surface))
+    return alloc_int(surface->getAlphaTextureId());
+
+  return alloc_int(0);
+}
+DEFINE_PRIM(nme_get_gl_alpha_texture_id_from_lime_surface,1);
+
+value nme_get_gl_texture_width_from_lime_surface(value inHandle)
+{
+  Surface *surface;
+  if (AbstractToObject(inHandle,surface))
+    return alloc_int(surface -> getTextureWidth());
+
+  return alloc_int(0);
+}
+DEFINE_PRIM(nme_get_gl_texture_width_from_lime_surface,1);
+
+value nme_get_gl_texture_height_from_lime_surface(value inHandle)
+{
+  Surface *surface;
+  if (AbstractToObject(inHandle,surface))
+    return alloc_int(surface -> getTextureHeight());
+
+  return alloc_int(0);
+}
+DEFINE_PRIM(nme_get_gl_texture_height_from_lime_surface,1);
+
+value nme_get_gl_texture_compressed_from_lime_surface(value inHandle)
+{
+  Surface *surface;
+  if (AbstractToObject(inHandle, surface))
+  {
+	return alloc_bool(surface->isCompressed());
+  }
+  
+  return alloc_bool(false);
+}
+DEFINE_PRIM(nme_get_gl_texture_compressed_from_lime_surface,1);
+
+value nme_get_gl_texture_separate_alpha_from_lime_surface(value inHandle)
+{
+  Surface *surface;
+  if (AbstractToObject(inHandle, surface))
+  {
+	return alloc_bool(surface->hasSepAlpha());
+  }
+  
+  return alloc_bool(false);
+}
+DEFINE_PRIM(nme_get_gl_texture_separate_alpha_from_lime_surface,1);
+
+//========================================================================================
+
 
 void nme_bitmap_data_set_format(value inHandle, int format, bool inConvert)
 {
@@ -5428,4 +5543,3 @@ extern "C" int nme_register_prims()
    #endif
    return 0;
 }
-

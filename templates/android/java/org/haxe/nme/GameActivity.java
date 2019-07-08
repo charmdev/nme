@@ -209,12 +209,12 @@ implements SensorEventListener
 
 
       mView = new MainView(mContext, this, (mBackground & 0xff000000)==0 );
-      Extension.mainView = mView;
+	  Extension.mainView = mView;
 
       mContainer.addView(mView, new LayoutParams(LayoutParams.FILL_PARENT,LayoutParams.FILL_PARENT) );
 
       getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);//remove keyboard at start
-      //mView.requestFocus();
+      mView.requestFocus();
 
       //weak ref instances?
       sensorManager = (SensorManager)mContext.getSystemService(Context.SENSOR_SERVICE);
@@ -635,6 +635,8 @@ implements SensorEventListener
          sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
          //sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_GAME);
       }
+	  
+	  mView.requestFocus();
    }
 
    public void onNMEFinish()

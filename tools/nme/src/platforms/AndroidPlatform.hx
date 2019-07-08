@@ -179,6 +179,11 @@ class AndroidPlatform extends Platform
    override function generateContext(context:Dynamic) : Void
    {
       context.ANDROID_INSTALL_LOCATION = project.androidConfig.installLocation;
+	  
+	  context.ANDROID_MINIMUM_SDK_VERSION = project.androidConfig.minApiLevel;
+	  context.ANDROID_BUILD_TOOLS_VERSION = (project.androidConfig.buildToolsVersion != "") ? project.androidConfig.buildToolsVersion : "28.0.2";
+	  context.ANDROID_GRADLE_VERSION = (project.androidConfig.gradleVersion != "") ? project.androidConfig.gradleVersion : "4.6";
+	  
       context.DEBUGGABLE = project.debug;
 
       var staticNme = project.isStaticNme();
@@ -245,7 +250,7 @@ class AndroidPlatform extends Platform
    }
    
    private function setGradleLibraries() {
-      context.ANDROID_LIBRARY_PROJECTS = [{name:'extension-api'}];
+      context.ANDROID_LIBRARY_PROJECTS = [];
       for(k in project.dependencies.keys()) {
          var lib = project.dependencies.get(k);
          if (lib.isAndroidProject()) {
@@ -451,6 +456,13 @@ class AndroidPlatform extends Platform
       else
          Log.error("Could not find " + lib + " - use the SDK Manager to add the dependency" );
    }
+   
+   override public function updateExtra():Void 
+   {
+	   super.updateExtra();
+	   
+	   copyTemplateDir("android/template", getOutputDir());
+   }
 
    override public function updateOutputDir():Void 
    {
@@ -531,7 +543,7 @@ class AndroidPlatform extends Platform
          addV4CompatLib(jarDir);
 
       if (gradle) {
-         copyTemplateDir( "android/extension-api", '${getOutputDir()}/extension-api');
+         copyTemplateDir( "android/extension-api", '${getOutputDir()}/deps/extension-api');
          copyTemplateDir( "android/java", '${getOutputDir()}/app/src/main/java');
       }
       else {
@@ -543,7 +555,7 @@ class AndroidPlatform extends Platform
       {
          var lib = project.dependencies.get(k);
          if (gradle) {
-              var libPath = '${getOutputDir()}/${lib.makeUniqueName()}';
+              var libPath = '${getOutputDir()}/deps/${lib.makeUniqueName()}';
               FileHelper.recursiveCopy( lib.getFilename(), libPath, context, true);
          }
          else if (lib.isAndroidProject())
@@ -551,6 +563,19 @@ class AndroidPlatform extends Platform
                FileHelper.recursiveCopy( lib.getFilename(), getAppDir()+"/"+getAndroidProject(lib), context, true);
          }
       }
+	  
+	  for(path in project.templateCopies)
+      {
+		  FileHelper.copyFile(path.from, getOutputDir() + "/" + path.to, context, true);
+	  }
+   }
+   
+   override public function updateBuildDir()
+   {
+      PathHelper.mkdir(targetDir);
+      PathHelper.mkdir(haxeDir);
+
+      copyTemplateDir( getHaxeTemplateDir(), haxeDir, true, false );
    }
 
 }

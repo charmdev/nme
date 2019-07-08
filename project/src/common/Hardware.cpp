@@ -2489,6 +2489,26 @@ bool HardwareRenderer::Hits(const RenderState &inState, const HardwareData &inDa
                   return true;
            }
          }
+		 else if (draw.mPrimType == ptQuadsFull || draw.mPrimType == ptQuads) ///////
+		 {
+			if (draw.mCount<4)
+               continue;
+			
+			int numQuads = draw.mCount / 4;
+			
+			int vidx = 0;
+            for(int i=0;i<numQuads;i++)
+            {
+               UserPoint base = V(vidx++);
+               UserPoint _v0 = V(vidx++);
+               UserPoint _v1 = V(vidx++);
+               UserPoint _v2 = V(vidx++);
+               if (HitTri(base,_v0,_v1,pos))
+                  return true;
+			   else if (HitTri(_v0,_v2,_v1,pos))
+                  return true;
+           }
+		 }
          else if (draw.mPrimType == ptTriangleStrip)
          {
             for(int i=2;i<draw.mCount;i++)

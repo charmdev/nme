@@ -209,6 +209,8 @@ class MainView extends GLSurfaceView {
         setRenderer(new Renderer(this));
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
        //Log.v("VIEW", "present on system: " + InputDevice.getDeviceIds());
+	   
+	    setPreserveEGLContextOnPause(true);
     }
 
    public void checkZOrder()

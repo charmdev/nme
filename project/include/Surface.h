@@ -11,6 +11,11 @@
 #include <nme/ImageBuffer.h>
 #include <nme/ObjectStream.h>
 
+//kukuruz ==================================
+#include <pvrt/PVRTGlobal.h>
+#include <pvrt/PVRTTexture.h>
+//=========================================
+
 // ---- Surface API --------------
 
 namespace nme
@@ -28,11 +33,23 @@ class Surface : public ImageBuffer
 {
 public:
    // Non-PO2 will generate dodgy repeating anyhow...
-   Surface() : mTexture(0), mVersion(0), mFlags(surfNotRepeatIfNonPO2) { };
+   Surface() : mTexture(0), mVersion(0), mFlags(surfNotRepeatIfNonPO2),
+	           /* kukuruz */ mCompressed(false), mSepAlpha(false) { };
 
    // Implementation depends on platform.
    static Surface *Load(const OSChar *inFilename);
    static Surface *LoadFromBytes(const uint8 *inBytes,int inLen);
+   
+   //kukuruz:
+   static Surface *LoadCompressed(const OSChar *inFilename);
+   static Surface *LoadCompressed(const OSChar *inFilename, const OSChar *inAlphaname);
+   
+   int getTextureId();
+   int getAlphaTextureId();
+   int getTextureWidth();
+   int getTextureHeight();
+   //=============================================================================  
+   
    bool Encode( nme::ByteArray *outBytes,bool inPNG,double inQuality);
 
    Surface *IncRef() { mRefCount++; return this; }
@@ -47,6 +64,9 @@ public:
    virtual void destroyHardwareSurface() { }
    virtual void dispose() { }
    virtual void MakeTextureOnly() { /*printf("Dumping bits from Surface\n");*/  }
+   
+   virtual void LoadAlpha(const OSChar *inAlphaname) { }
+   virtual bool needAlpha() { return false; }
 
    int BytesPP() const { return nme::BytesPerPixel(Format()); }
 
@@ -91,13 +111,20 @@ public:
    void OnChanged() { mVersion++; }
 
    int Version() const  { return mVersion; }
-
+   
+   //kukuruz
+   bool isCompressed() { return mCompressed; }
+   bool hasSepAlpha() { return mSepAlpha; }
 
 protected:
    mutable int   mVersion;
    Texture       *mTexture;
    virtual       ~Surface();
    unsigned int  mFlags;
+   
+   //kukuruz:
+   bool mSepAlpha;
+   bool mCompressed;
 };
 
 // Helper class....
@@ -240,6 +267,74 @@ public:
       ~HardwareSurface();
    private:
       HardwareRenderer *mHardware;
+};
+
+
+//kukuruz: special CompressedTexture class =============================================
+
+class CompressedSurface : public Surface
+{
+public:
+   CompressedSurface( int inWidth,int inHeight);
+   
+   int Width() const  { return mWidth; }
+   int Height() const  { return mHeight; }
+
+   uint32 getPixel(int inX,int inY) { return 0; }
+
+   void Clear(uint32 inColour,const Rect *inRect=0) { }
+   RenderTarget BeginRender(const Rect &inRect,bool inForHitTest=false) { return RenderTarget(); }
+   void EndRender() { }
+
+   void BlitTo(const RenderTarget &outTarget, const Rect &inSrcRect,int inPosX, int inPosY, BlendMode inBlend, 
+               const BitmapCache *inMask,
+               uint32 inTint=0xffffff ) const { }
+
+   virtual void StretchTo(const RenderTarget &outTarget,
+                          const Rect &inSrcRect, const DRect &inDestRect,unsigned int inFlags) const;
+
+   void BlitChannel( const RenderTarget &outTarget, const Rect &inSrcRect,
+                     int inPosX, int inPosY,
+                     int inSrcChannel, int inDestChannel ) const { }
+
+   const uint8 *GetBase() const { return 0; }
+   int GetStride() const { return 0; }
+   uint8       *Edit(const Rect *inRect=0) { return 0; }
+   void        Commit() { }
+   PixelFormat Format()  const { return pfRGB565; }
+
+   void dispose();
+   void MakeTextureOnly();
+   void ClearBuffs();
+   
+   void AttachData(PVRTextureHeaderV3& sTextureHeader, uint8 *data);
+   void AttachAlpha(PVRTextureHeaderV3& sAlphaHeader, uint8 *alpha);
+   
+   void LoadAlpha(const OSChar *inAlphaname);
+   bool needAlpha();
+
+   uint8* getData() { return mData; }
+   int getDataSize() { return mDataSize; }
+   int getDataFormat() { return mDataFormat; }
+
+   uint8* getAlpha() { return mAlpha; }
+   int getAlphaSize() { return mAlphaSize; }
+   int getAlphaFormat() { return mAlphaFormat; }
+
+protected:
+    ~CompressedSurface();
+
+   int mWidth;
+   int mHeight;
+
+   uint8 *mData;
+   int mDataSize;
+   int mDataFormat;
+
+   //if separate alpha
+   uint8 *mAlpha;
+   int mAlphaSize;
+   int mAlphaFormat;
 };
 
 

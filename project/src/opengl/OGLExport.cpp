@@ -274,10 +274,11 @@ struct DebugFunc
 class NmeResource : public nme::Object
 {
 public:
-   NmeResource(int inId, ResoType inType)
+   NmeResource(int inId, ResoType inType, bool inCopied = false)
    {
       id= inId;
       type = inType;
+	  copied = inCopied;
       contextVersion = gTextureContextVersion;
    }
    virtual ~NmeResource()
@@ -287,8 +288,8 @@ public:
    NmeObjectType getObjectType() { return notHardwareResource; }
    void release()
    {
-      HardwareRenderer *ctx = HardwareRenderer::current;
-      if (ctx && id && contextVersion==gTextureContextVersion)
+	  HardwareRenderer *ctx = HardwareRenderer::current;
+      if (ctx && id && contextVersion==gTextureContextVersion && !copied)
       {
          switch(type)
          {
@@ -334,11 +335,12 @@ public:
    int id;
    int contextVersion;
    ResoType type;
+   bool copied;
 };
 
-value createResource(unsigned int inResource, ResoType inType)
+value createResource(unsigned int inResource, ResoType inType, bool inCopy = false)
 {
-   value result = ObjectToAbstract( new NmeResource(inResource,inType) );
+   value result = ObjectToAbstract( new NmeResource(inResource,inType,inCopy) );
    return result;
 }
 
@@ -803,6 +805,19 @@ value nme_gl_create_shader(value inType)
 }
 DEFINE_PRIM(nme_gl_create_shader,1);
 
+value nme_texture_from_id(value inId)
+{
+   DBGFUNC("textureFromId");
+   return createResource(val_int(inId),resoTexture, true);
+}
+DEFINE_PRIM(nme_texture_from_id, 1);
+
+value nme_get_gl_texture_id_from_resource(value inId)
+{
+   int id = getResource(inId,resoTexture);
+   return alloc_int(id);
+}
+DEFINE_PRIM(nme_get_gl_texture_id_from_resource,1);
 
 #define GL_GEN_RESO(name,gen,type) \
    value nme_gl_create_##name() { \

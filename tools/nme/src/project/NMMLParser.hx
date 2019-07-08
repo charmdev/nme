@@ -495,6 +495,33 @@ class NMMLParser
 
    private function parseAndroidElement(element:Access):Void 
    {
+	   for (attribute in element.x.attributes()) 
+	   {
+			var name = attribute;
+			var value = substitute(element.att.resolve (attribute));
+			
+			switch (name) 
+			{
+				case "minimum-sdk-version":
+					project.androidConfig.minApiLevel = Std.parseInt(value);
+				
+				case "target-sdk-version":
+					project.androidConfig.targetApiLevel = Std.parseInt(value);
+				
+				case "install-location":
+					project.androidConfig.installLocation = value;
+
+				case "gradle-version":
+					project.androidConfig.gradleVersion = value;
+
+				case "build-tools-version":
+					project.androidConfig.buildToolsVersion = value;
+					
+				default:
+					
+			}	
+	   }
+	   
       if (element.has.minApiLevel) 
          project.androidConfig.minApiLevel = Std.parseInt(substitute(element.att.minApiLevel));
 

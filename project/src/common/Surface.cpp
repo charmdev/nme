@@ -43,7 +43,30 @@ Texture *Surface::GetTexture(HardwareContext *inHardware,int inPlane)
    return mTexture;
 }
 
+//kukuruz
+int Surface::getTextureId()
+{
+   Texture *tex = GetTexture( nme::HardwareRenderer::current );
+   return tex -> getTextureId();
+}
 
+int Surface::getAlphaTextureId()
+{
+   Texture *tex = GetTexture( nme::HardwareRenderer::current );
+   return tex -> getAlphaTextureId();
+}
+
+int Surface::getTextureWidth()
+{
+   Texture *tex = GetTexture( nme::HardwareRenderer::current );
+   return tex -> GetWidth();
+}
+
+int Surface::getTextureHeight()
+{
+   Texture *tex = GetTexture( nme::HardwareRenderer::current );
+   return tex -> GetHeight();
+}
 
 
 // --- SimpleSurface -------------------------------------------------------

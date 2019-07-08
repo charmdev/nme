@@ -267,11 +267,9 @@
       <compilerflag value="-D_7ZIP_ST" unless="windows"/>
       <compilerflag value="-DNME_NOPREMULTIPLIED_ALPHA" if="NME_NOPREMULTIPLIED_ALPHA" />
       <compilerflag value="-DNME_BUILDING_LIB" />
-
-
-
+	
       <file name="${SRC_DIR}/common/Surface.cpp"/>
-      <file name="${SRC_DIR}/common/Utils.cpp"/>
+	  <file name="${SRC_DIR}/common/Utils.cpp"/>
       <file name="${SRC_DIR}/common/Geom.cpp"/>
       <file name="${SRC_DIR}/common/Graphics.cpp"/>
       <file name="${SRC_DIR}/common/GraphicsData.cpp"/>
@@ -298,6 +296,8 @@
       <file name="${SRC_DIR}/common/Lzma.cpp" tags="static" />
       <file name="${SRC_DIR}/common/Thread.cpp"/>
       <file name="${SRC_DIR}/common/Camera.cpp" if="NME_CAMERA"  tags="static" />
+	   
+	   <file name="${SRC_DIR}/common/CompressedSurface.cpp" />
 
       <file name="${SRC_DIR}/audio/Audio.cpp" />
       <file name="${SRC_DIR}/audio/ChannelList.cpp" />

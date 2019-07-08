@@ -32,6 +32,12 @@ public class Extension {
 		
 	}
 	
+	public boolean onBackPressed () {
+		
+		return true;
+		
+	}
+	
 	
 	/**
 	 * Called when the activity is starting.

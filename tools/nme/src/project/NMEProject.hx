@@ -26,6 +26,8 @@ class AndroidConfig
    public var gameActivityViewBase:String;
    public var extensions:Map<String,Bool>;
    public var ABIs:Array<String> = [];
+   public var gradleVersion:String = "";
+   public var buildToolsVersion:String = "";
 
    public function new()
    {
@@ -809,6 +811,11 @@ class NMEProject
       {
          Reflect.setField(context, "APP_" + StringHelper.formatUppercaseVariable(field), Reflect.field(app, field));
       }
+	  
+	  for(key in environment.keys())
+      {
+		  Reflect.setField(baseTemplateContext, "ENV_" + key, environment.get(key));
+	  }
 
       if (watchProject!=null)
       {
