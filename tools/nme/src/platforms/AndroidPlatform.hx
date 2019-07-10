@@ -184,6 +184,11 @@ class AndroidPlatform extends Platform
 	  context.ANDROID_BUILD_TOOLS_VERSION = (project.androidConfig.buildToolsVersion != "") ? project.androidConfig.buildToolsVersion : "28.0.2";
 	  context.ANDROID_GRADLE_VERSION = (project.androidConfig.gradleVersion != "") ? project.androidConfig.gradleVersion : "4.6";
 	  
+	  if (Reflect.hasField(context, "KEY_STORE")) context.KEY_STORE = StringTools.replace(context.KEY_STORE, "\\", "\\\\");
+	  if (Reflect.hasField(context, "KEY_STORE_ALIAS")) context.KEY_STORE_ALIAS = StringTools.replace(context.KEY_STORE_ALIAS, "\\", "\\\\");
+	  if (Reflect.hasField(context, "KEY_STORE_PASSWORD")) context.KEY_STORE_PASSWORD = StringTools.replace(context.KEY_STORE_PASSWORD, "\\", "\\\\");
+	  if (Reflect.hasField(context, "KEY_STORE_ALIAS_PASSWORD")) context.KEY_STORE_ALIAS_PASSWORD = StringTools.replace(context.KEY_STORE_ALIAS_PASSWORD, "\\", "\\\\");
+	  
       context.DEBUGGABLE = project.debug;
 
       var staticNme = project.isStaticNme();
@@ -566,7 +571,14 @@ class AndroidPlatform extends Platform
 	  
 	  for(path in project.templateCopies)
       {
-		  FileHelper.copyFile(path.from, getOutputDir() + "/" + path.to, context, true);
+		  if (FileSystem.isDirectory(path.from))
+		  {
+			  FileHelper.recursiveCopy(path.from, getOutputDir() + "/" + path.to, context, true);
+		  }
+		  else
+		  {
+			  FileHelper.copyFile(path.from, getOutputDir() + "/" + path.to, context, true);
+		  }
 	  }
    }
    
@@ -575,7 +587,7 @@ class AndroidPlatform extends Platform
       PathHelper.mkdir(targetDir);
       PathHelper.mkdir(haxeDir);
 
-      copyTemplateDir( getHaxeTemplateDir(), haxeDir, true, false );
+      copyTemplateDir(getHaxeTemplateDir(), haxeDir, true, false);
    }
 
 }

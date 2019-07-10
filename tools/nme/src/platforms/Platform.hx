@@ -666,7 +666,14 @@ class Platform
       copyTemplateDir( getHaxeTemplateDir(), haxeDir, true, false );
       for(path in project.templateCopies)
       {
-		  FileHelper.copyFile(path.from, getOutputDir() + "/" + path.to, context, true);
+		  if (FileSystem.isDirectory(path.from))
+		  {
+			  FileHelper.recursiveCopy(path.from, getOutputDir() + "/" + path.to, context, true);
+		  }
+		  else
+		  {
+			  FileHelper.copyFile(path.from, getOutputDir() + "/" + path.to, context, true);
+		  }
 	  }
    }
 

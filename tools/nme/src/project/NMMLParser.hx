@@ -277,6 +277,26 @@ class NMMLParser
       return inDefault;
    }
 
+   private function parseTemplateElement(element:Access, extensionPath:String):Void
+   {
+		var path = "";
+		if (element.has.name)
+			path = combine(extensionPath, substitute(element.att.name));
+		else if (element.has.path)
+			path = combine(extensionPath, substitute(element.att.path));
+		else
+			Log.error("Template should have either a 'name' or a 'path'");
+
+		if (element.has.rename)
+		{
+			project.templateCopies.push(new TemplateCopy(path, substitute(element.att.rename)));
+		}
+		else
+		{
+			project.templatePaths.remove(path);
+			project.templatePaths.push(path);
+		}
+   }
 
    private function parseAssetsElement(element:Access, basePath:String = ""):Void 
    {
@@ -902,8 +922,10 @@ class NMMLParser
                   parseWindowElement(element);
 
                case "assets":
-                  if(!project.skipAssets)
-                     parseAssetsElement(element, extensionPath);
+				  if (element.has.type && element.att.type == "template")
+					  parseTemplateElement(element, extensionPath);
+				  else if (!project.skipAssets)
+					  parseAssetsElement(element, extensionPath); 
 
                case "watchos":
                   parseWatchOSElement(element, extensionPath);
@@ -932,24 +954,7 @@ class NMMLParser
                   //if (wantSslCertificate())
                      //parseSsl(element);
                case "template", "templatePath":
-
-                  var path = "";
-                  if (element.has.name)
-                     path = combine(extensionPath, substitute(element.att.name));
-                  else if (element.has.path)
-                     path = combine(extensionPath, substitute(element.att.path));
-                  else
-                     Log.error("Template should have either a 'name' or a 'path'");
-
-                  if (element.has.rename)
-                  {
-                     project.templateCopies.push( new TemplateCopy(path, substitute(element.att.rename) ) );
-                  }
-                  else
-                  {
-                     project.templatePaths.remove(path);
-                     project.templatePaths.push(path);
-                  }
+                  parseTemplateElement(element, extensionPath);
 
                case "preloader":
                   // deprecated
