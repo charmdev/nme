@@ -10,6 +10,7 @@ android {
 		targetSdkVersion ::ANDROID_TARGET_API_LEVEL::
 		versionCode ::APP_BUILD_NUMBER::
         versionName "::APP_VERSION::"
+		testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 	}
 	
 	::if KEY_STORE::
@@ -46,20 +47,61 @@ android {
 		release {
 			minifyEnabled false
 			signingConfig signingConfigs.release
+			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 		}
 	}
 	
-	android.applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            def outputFile = output.outputFile
+	splits {
+		
+		// Configures multiple APKs based on ABI.
+		abi {
+			// Enables building multiple APKs per ABI.
+			enable true
 			
-
-        }
-    }
+			// By default all ABIs are included, so use reset() and include to specify that we only
+			// want APKs for x86 and x86_64.
+			
+			// Resets the list of ABIs that Gradle should create APKs for to none.
+			reset()
+			
+			// Specifies a list of ABIs that Gradle should create APKs for.
+			include ::ABIS::
+			
+			// Specifies that we do not want to also generate a universal APK that includes all ABIs.
+			universalApk false
+		}
+	}
 }
 
 dependencies {
 	implementation fileTree(dir: 'libs', include: ['*.jar'])
 	::if (ANDROID_LIBRARY_PROJECTS)::::foreach (ANDROID_LIBRARY_PROJECTS)::implementation project(':deps:::name::')
 	::end::::end::
+	
+	androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+		exclude group: 'com.android.support', module: 'support-annotations'
+	})
+	api 'com.android.support:appcompat-v7:24.2.1'
+	api 'com.android.support:support-v4:24.2.1'
+	::if ANDROID_BILLING::
+	api 'com.android.billingclient:billing:1.0'
+	::end::
+	testImplementation 'junit:junit:4.12'
+}
+
+
+/* Assigns a different version code for each output APK
+    other than the universal APK. */
+
+ext.abiCodes = [::ABI_CODES::]
+
+import com.android.build.OutputFile
+
+android.applicationVariants.all { variant ->
+    variant.outputs.each { output ->
+        def baseAbiVersionCode = project.ext.abiCodes.get(output.getFilter(OutputFile.ABI))
+        if (baseAbiVersionCode != null) {
+            output.versionCodeOverride = baseAbiVersionCode * 10000 + variant.versionCode
+        }
+    }
 }
