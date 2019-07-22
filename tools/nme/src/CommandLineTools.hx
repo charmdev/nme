@@ -1307,22 +1307,11 @@ class CommandLineTools
    static function buildNdll()
    {
       sys.println("The binary nme.ndll is not distrubuted with source code, and is not built for your system yet.");
-      while(true)
-      {
-         Sys.print("Would you like to build it now Y/n ? >");
-         var result = Sys.stdin().readLine();
-         if (result.substr(0,1).toLowerCase()=="n")
-            return;
-         if (result.substr(0,1).toLowerCase()=="y" || result=="")
-         {
-            sys.println("Update nme-dev...");
-            ProcessHelper.runCommand("", "haxelib", ["update","nme-dev"]);
-            sys.println("Build binaries...");
-            ProcessHelper.runCommand(nme + "/project", "neko", ["build.n"] );
-            sys.println("\nPlease re-run nme");
-            return;
-         }
-      }
+      sys.println("Update nme-dev...");
+      ProcessHelper.runCommand("", "haxelib", ["update","nme-dev"]);
+      sys.println("Build binaries...");
+      ProcessHelper.runCommand(nme + "/project", "neko", ["build.n"] );
+      sys.println("\nPlease re-run nme");
    }
 
    public static function rebuild(project:NMEProject)
@@ -1354,7 +1343,7 @@ class CommandLineTools
       if (!Loader.foundNdll)
       {
          buildNdll();
-         return;
+         nme = PathHelper.getHaxelib(new Haxelib("nme"));
       }
 
       var project = new NMEProject( );
