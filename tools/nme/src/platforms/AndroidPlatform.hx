@@ -179,16 +179,16 @@ class AndroidPlatform extends Platform
    override function generateContext(context:Dynamic) : Void
    {
       context.ANDROID_INSTALL_LOCATION = project.androidConfig.installLocation;
-	  
-	  context.ANDROID_MINIMUM_SDK_VERSION = project.androidConfig.minApiLevel;
-	  context.ANDROID_BUILD_TOOLS_VERSION = (project.androidConfig.buildToolsVersion != "") ? project.androidConfig.buildToolsVersion : "28.0.2";
-	  context.ANDROID_GRADLE_VERSION = (project.androidConfig.gradleVersion != "") ? project.androidConfig.gradleVersion : "4.6";
-	  
-	  if (Reflect.hasField(context, "KEY_STORE")) context.KEY_STORE = StringTools.replace(context.KEY_STORE, "\\", "\\\\");
-	  if (Reflect.hasField(context, "KEY_STORE_ALIAS")) context.KEY_STORE_ALIAS = StringTools.replace(context.KEY_STORE_ALIAS, "\\", "\\\\");
-	  if (Reflect.hasField(context, "KEY_STORE_PASSWORD")) context.KEY_STORE_PASSWORD = StringTools.replace(context.KEY_STORE_PASSWORD, "\\", "\\\\");
-	  if (Reflect.hasField(context, "KEY_STORE_ALIAS_PASSWORD")) context.KEY_STORE_ALIAS_PASSWORD = StringTools.replace(context.KEY_STORE_ALIAS_PASSWORD, "\\", "\\\\");
-	  
+     
+     context.ANDROID_MINIMUM_SDK_VERSION = project.androidConfig.minApiLevel;
+     context.ANDROID_BUILD_TOOLS_VERSION = (project.androidConfig.buildToolsVersion != "") ? project.androidConfig.buildToolsVersion : "28.0.2";
+     context.ANDROID_GRADLE_VERSION = (project.androidConfig.gradleVersion != "") ? project.androidConfig.gradleVersion : "4.6";
+     
+     if (Reflect.hasField(context, "KEY_STORE")) context.KEY_STORE = StringTools.replace(context.KEY_STORE, "\\", "\\\\");
+     if (Reflect.hasField(context, "KEY_STORE_ALIAS")) context.KEY_STORE_ALIAS = StringTools.replace(context.KEY_STORE_ALIAS, "\\", "\\\\");
+     if (Reflect.hasField(context, "KEY_STORE_PASSWORD")) context.KEY_STORE_PASSWORD = StringTools.replace(context.KEY_STORE_PASSWORD, "\\", "\\\\");
+     if (Reflect.hasField(context, "KEY_STORE_ALIAS_PASSWORD")) context.KEY_STORE_ALIAS_PASSWORD = StringTools.replace(context.KEY_STORE_ALIAS_PASSWORD, "\\", "\\\\");
+     
       context.DEBUGGABLE = project.debug;
 
       var staticNme = project.isStaticNme();
@@ -464,9 +464,9 @@ class AndroidPlatform extends Platform
    
    override public function updateExtra():Void 
    {
-	   super.updateExtra();
-	   
-	   copyTemplateDir("android/template", getOutputDir());
+      super.updateExtra();
+      
+      copyTemplateDir("android/template", getOutputDir());
    }
 
    override public function updateOutputDir():Void 
@@ -568,18 +568,20 @@ class AndroidPlatform extends Platform
                FileHelper.recursiveCopy( lib.getFilename(), getAppDir()+"/"+getAndroidProject(lib), context, true);
          }
       }
-	  
-	  for(path in project.templateCopies)
-      {
-		  if (FileSystem.isDirectory(path.from))
-		  {
-			  FileHelper.recursiveCopy(path.from, getOutputDir() + "/" + path.to, context, true);
-		  }
-		  else
-		  {
-			  FileHelper.copyFile(path.from, getOutputDir() + "/" + path.to, context, true);
-		  }
-	  }
+     
+     for(path in project.templateCopies)
+     {
+        if (!FileSystem.exists(path.from)) continue;
+        
+        if (FileSystem.isDirectory(path.from))
+        {
+           FileHelper.recursiveCopy(path.from, getOutputDir() + "/" + path.to, context, true);
+        }
+        else
+        {
+           FileHelper.copyFile(path.from, getOutputDir() + "/" + path.to, context, true);
+        }
+     }
    }
    
    override public function updateBuildDir()
