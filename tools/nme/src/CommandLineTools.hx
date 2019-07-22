@@ -1343,7 +1343,7 @@ class CommandLineTools
       if (!Loader.foundNdll)
       {
          buildNdll();
-         nme = PathHelper.getHaxelib(new Haxelib("nme"));
+         return;
       }
 
       var project = new NMEProject( );
