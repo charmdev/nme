@@ -126,7 +126,7 @@ class Window
       hxt.start_timing (".event");
       #end
       var event:AppEvent = inEvent;
-      try
+    //  try
       {
          #if !(cpp && hxcpp_api_level>=312)
          inEvent.pollTime = haxe.Timer.stamp();
@@ -268,12 +268,12 @@ class Window
          nme_stage_set_next_wake(nmeHandle,nextWake);
          #end
       }
-      catch(e:Dynamic)
+      /*catch(e:Dynamic)
       {
          var stack = haxe.CallStack.exceptionStack();
          event.pollTime = 0;
          appEventHandler.onUnhandledException(e,stack);
-      }
+      }*/
       #if HXCPP_TELEMETRY
       hxt.end_timing (".event");
       hxt.rewind_stack (hxtStack);
