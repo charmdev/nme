@@ -32,7 +32,7 @@ class AndroidConfig
    public function new()
    {
       installLocation = "preferExternal";
-      minApiLevel = 14;
+      minApiLevel = 16;
       addV4Compat = true;
       appHeader = [];
       appIntent = [];
@@ -817,6 +817,19 @@ class NMEProject
 		  Reflect.setField(baseTemplateContext, "ENV_" + key, environment.get(key));
 	  }
 
+      var ver = app.version;
+      var parts = ver.split(".");
+      // TODO - build number...
+      if (parts.length==3)
+         parts.push("0");
+      context.FILE_VERSION = parts.join(".");
+      context.VERSION_NUMBER = parts.join(",");
+
+      var year0 = getDef("COPYRIGHT_START");
+      var year1 = Date.now().getFullYear();
+      
+      context.COPYRIGHT_YEARS = year0!=null ? '$year0-$year1' : year1;
+
       if (watchProject!=null)
       {
          for(field in Reflect.fields(watchProject.app)) 
@@ -884,6 +897,7 @@ class NMEProject
          case ScaleUiScaled:
       }
       context.WIN_STAGE_ALIGN = Type.enumIndex(window.scaleMode);
+      context.DPI_AWARE = getDef("dpiAware");
 
 
       for(haxeflag in haxeflags) 

@@ -335,9 +335,13 @@ class Stage extends DisplayObjectContainer implements nme.app.IPollClient implem
            var text:String = null;
            if (inEvent.code>0)
            {
+              #if haxe4
+              text = String.fromCharCode(inEvent.code);
+              #else
               var u = new haxe.Utf8();
               u.addChar( inEvent.code );
               text = u.toString();
+              #end
            }
            else
            {
@@ -687,6 +691,12 @@ class Stage extends DisplayObjectContainer implements nme.app.IPollClient implem
       var obj:DisplayObject = nmeFindByID(inEvent.id);
       if (obj != null)
          obj.nmeFireEvent(new Event(Event.SCROLL));
+   }
+
+
+   public function onDpiChanged(inEvent:AppEvent):Void
+   {
+      nmeDispatchEvent(new Event(Event.DPI_CHANGED) );
    }
 
    public function onActive(inActive:Bool):Void

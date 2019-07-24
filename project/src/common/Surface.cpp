@@ -2151,6 +2151,9 @@ void SimpleSurface::setFloats32(const float *inData, int inStride, PixelFormat i
           inFormat,  &buffer[0], stride, 0,
           mPixelFormat, ptr, mStride, 0 );
    }
+
+   if (mTexture)
+      mTexture->Dirty(bounds);
 }
 
 
