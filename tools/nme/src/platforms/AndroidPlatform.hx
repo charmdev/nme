@@ -42,14 +42,14 @@ class AndroidPlatform extends Platform
             args: ["-D", "HXCPP_ARM64"],
             libArchSuffix: "-64",
             versionCodeScaler: 3
-         }/*,
+         },
          {
             name: "x86",
             architecture: Architecture.X86,
             args: ["-D", "HXCPP_X86"],
             libArchSuffix: "-x86",
             versionCodeScaler: 4
-         },
+         }/*,
          {
              name: "x86_64",
              architecture: Architecture.X86_64,
@@ -79,7 +79,7 @@ class AndroidPlatform extends Platform
             project.androidConfig.ABIs = [abi];
       }
       else if(project.androidConfig.ABIs.length == 0) {
-         project.androidConfig.ABIs = ["armeabi-v7a", "arm64-v8a"/*, "x86", "x86_64"*/];
+         project.androidConfig.ABIs = ["armeabi-v7a", "arm64-v8a", "x86"/*, "x86_64"*/];
       }
 
       project.architectures = [for(abi in project.androidConfig.ABIs) findArchitectureByName(abi)];
