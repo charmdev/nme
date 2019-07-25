@@ -42,7 +42,7 @@ class AndroidPlatform extends Platform
             args: ["-D", "HXCPP_ARM64"],
             libArchSuffix: "-64",
             versionCodeScaler: 3
-         },
+         }/*,
          {
             name: "x86",
             architecture: Architecture.X86,
@@ -56,7 +56,7 @@ class AndroidPlatform extends Platform
              args: ["-D", "HXCPP_X86_64"],
              libArchSuffix: "-x86_64",
              versionCodeScaler: 5
-         }
+         }*/
       ];
 
       if (project.hasDef("androidBilling"))
@@ -79,7 +79,7 @@ class AndroidPlatform extends Platform
             project.androidConfig.ABIs = [abi];
       }
       else if(project.androidConfig.ABIs.length == 0) {
-         project.androidConfig.ABIs = ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"];
+         project.androidConfig.ABIs = ["armeabi-v7a", "arm64-v8a"/*, "x86", "x86_64"*/];
       }
 
       project.architectures = [for(abi in project.androidConfig.ABIs) findArchitectureByName(abi)];
