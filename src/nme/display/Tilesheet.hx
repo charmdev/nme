@@ -52,10 +52,12 @@ class Tilesheet
 
    public function getTileRect(index:Int, ?result:Rectangle):Rectangle
    {
-      if (result == null)
-      {
+       if (tileCount <= index)
+        return null;
+	   
+	   if (result == null)
         result =  new Rectangle();
-      }
+	  
       nme_tilesheet_get_rect(nmeHandle, index, result);
       return result;
    }
@@ -69,7 +71,6 @@ class Tilesheet
    private static var nme_tilesheet_create = PrimeLoader.load("nme_tilesheet_create", "oo");
    private static var nme_tilesheet_add_rect = PrimeLoader.load("nme_tilesheet_add_rect", "oooi");
    private static var nme_tilesheet_get_rect = PrimeLoader.load("nme_tilesheet_get_rect", "oiov");
-
    #else
 
    var tiles:Array<Rectangle>;
