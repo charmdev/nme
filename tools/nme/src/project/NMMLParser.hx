@@ -1008,7 +1008,8 @@ class NMMLParser
                   parseXML(element, "", extensionPath, inWarnUnknown);
 
                case "certificate":
-                  project.certificate = new Keystore(substitute(element.att.path));
+				   if (element.has.path) 
+                     project.certificate = new Keystore(substitute(element.att.path));
 
                   if (element.has.type) 
                      project.certificate.type = substitute(element.att.type);
