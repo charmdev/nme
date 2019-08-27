@@ -515,10 +515,32 @@ ${hxcpp_include}';
              PathHelper.mkdir(targetDir + "/" + project.app.file + ".xcodeproj/xcshareddata/xcschemes"  );
              copyTemplate("ios/schemes/Watch.xcscheme", targetDir + "/" + project.app.file + ".xcodeproj/xcshareddata/xcschemes/Watch.xcscheme"  );
          }
+		 
+		 for(path in project.templateCopies)
+         {
+             if (!FileSystem.exists(path.from)) continue;
+        
+             if (FileSystem.isDirectory(path.from))
+             {
+                 FileHelper.recursiveCopy(path.from, getOutputDir() + "/" + path.to, context, true);
+             }
+             else
+             {
+                 FileHelper.copyFile(path.from, getOutputDir() + "/" + path.to, context, true);
+             }
+         }
       }
 
       if (project.command == "update" && PlatformHelper.hostPlatform == Platform.MAC) 
          ProcessHelper.runCommand("", "open", [ targetDir + "/" + project.app.file + ".xcodeproj" ] );
+   }
+   
+   override public function updateBuildDir()
+   {
+      PathHelper.mkdir(targetDir);
+      PathHelper.mkdir(haxeDir);
+
+      copyTemplateDir(getHaxeTemplateDir(), haxeDir, true, false);
    }
 
    override public function updateLibs()
