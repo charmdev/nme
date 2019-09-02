@@ -542,8 +542,8 @@ ${hxcpp_include}';
 
       copyTemplateDir(getHaxeTemplateDir(), haxeDir, true, false);
 	  
-	  copyTemplate("ios/haxe/Build.hxml", "haxe/build.hxml");
-	  copyTemplate("ios/haxe/makefile", "haxe/makefile");
+	  copyTemplate("ios/haxe/Build.hxml", haxeDir + "/build.hxml");
+	  copyTemplate("ios/haxe/makefile", haxeDir + "/makefile");
    }
 
    override public function updateLibs()
