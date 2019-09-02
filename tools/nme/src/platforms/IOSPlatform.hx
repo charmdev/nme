@@ -541,6 +541,9 @@ ${hxcpp_include}';
       PathHelper.mkdir(haxeDir);
 
       copyTemplateDir(getHaxeTemplateDir(), haxeDir, true, false);
+	  
+	  copyTemplate("ios/haxe/Build.hxml", "haxe/build.hxml");
+	  copyTemplate("ios/haxe/makefile", "haxe/makefile");
    }
 
    override public function updateLibs()
@@ -892,8 +895,15 @@ ${hxcpp_include}';
         {
             configuration = "Debug";
         }
+		
+		var identity = "iPhone Developer";
 
-        var commands = [ "-s", "iPhone Developer" ];
+        if (project.certificate != null && project.certificate.identity != null) 
+		{
+			identity = project.certificate.identity;
+		}
+		
+		var commands = [ "-s", identity ];
 
         if (entitlementsPath != null) 
         {

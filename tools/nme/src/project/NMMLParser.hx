@@ -1008,22 +1008,29 @@ class NMMLParser
                   parseXML(element, "", extensionPath, inWarnUnknown);
 
                case "certificate":
-				   if (element.has.path) 
+				   if (element.has.path)
+				   {
                      project.certificate = new Keystore(substitute(element.att.path));
+					 
+					 if (element.has.type) 
+						 project.certificate.type = substitute(element.att.type);
 
-                  if (element.has.type) 
-                     project.certificate.type = substitute(element.att.type);
+					  if (element.has.password) 
+						 project.certificate.password = substitute(element.att.password);
 
-                  if (element.has.password) 
-                     project.certificate.password = substitute(element.att.password);
+					  if (element.has.alias) 
+						 project.certificate.alias = substitute(element.att.alias);
 
-                  if (element.has.alias) 
-                     project.certificate.alias = substitute(element.att.alias);
-
-                  if (element.has.resolve("alias-password")) 
-                     project.certificate.aliasPassword = substitute(element.att.resolve("alias-password"));
-                  else if (element.has.alias_password) 
-                     project.certificate.aliasPassword = substitute(element.att.alias_password);
+					  if (element.has.resolve("alias-password")) 
+						 project.certificate.aliasPassword = substitute(element.att.resolve("alias-password"));
+					  else if (element.has.alias_password) 
+						 project.certificate.aliasPassword = substitute(element.att.alias_password);
+				   }
+				   else if (element.has.identity) 
+				   {
+                        project.certificate = new Keystore(null);
+                        project.certificate.identity = substitute(element.att.identity);
+				   }
 
                case "dependency":
                   var name = element.has.name ? substitute(element.att.name) : "";
@@ -1255,7 +1262,7 @@ class NMMLParser
             var requiredVersion = Std.parseInt( newString.substr(12) );
             newString = requiredVersion <= TOOL_VERSION ? "true" : "false";
          }
-         else
+		 else
          {
             if (newString.indexOf(":")>=0)
                Log.error('Unknown function $newString');

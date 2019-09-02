@@ -5,8 +5,9 @@ class Keystore
    public var password:String;
    public var path:String;
    public var type:String;
+   public var identity:String;
 
-   public function new(path:String, password:String = null, alias:String = null, aliasPassword:String = null) 
+   public function new(path:String, password:String = null, alias:String = null, aliasPassword:String = null, identity:String = null) 
    {
       this.path = path;
       this.password = password;
@@ -16,6 +17,6 @@ class Keystore
 
    public function clone():Keystore 
    {
-      return new Keystore(path, password, alias, aliasPassword);
+      return new Keystore(path, password, alias, aliasPassword, identity);
    }
 }
