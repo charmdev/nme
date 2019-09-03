@@ -980,9 +980,13 @@ class NMEProject
          var value = haxedefs.get(key);
 
          if (value == null || value == "") 
-            compilerFlags.push("-D " + key);
+         {
+			 compilerFlags.push("-D " + key);
+			 Reflect.setField(context, "DEFINE_" + StringHelper.formatUppercaseVariable(key), true);
+		 }
          else
             compilerFlags.push("-D " + key + "=" + value);
+			Reflect.setField(context, "DEFINE_" + StringHelper.formatUppercaseVariable(key), value);
       }
 
       if (target != Platform.FLASH) 
