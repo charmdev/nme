@@ -300,26 +300,46 @@ ${hxcpp_include}';
            {
               imports.push( "@import " + lib.split(".framework")[0] + ";" );
            }
-           else
-           {
-              var frameworkID = "11C0000000000018" + StringHelper.getUniqueID();
-              var fileID = "11C0000000000018" + StringHelper.getUniqueID();
-              var path:String = 'System/Library/Frameworks';
-              if(dependency.path != '')
-                  path = dependency.path;
-              var sourceTree:String = "SDKROOT";
-               if(dependency.sourceTree != '') {
-                   sourceTree = dependency.sourceTree;
-                   if(sourceTree == 'group') {
-                       sourceTree = "\"<group>\"";
-                   }
-               }
-              context.ADDL_PBX_BUILD_FILE += '      $frameworkID /* $lib in Frameworks */ = {isa = PBXBuildFile; fileRef = $fileID /* $lib */; };\n';
-              context.ADDL_PBX_FILE_REFERENCE += '     $fileID /* $lib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = $lib; path = $path/$lib; sourceTree = $sourceTree; };\n';
-              context.ADDL_PBX_FRAMEWORKS_BUILD_PHASE += '            $frameworkID /* $lib in Frameworks */,\n';
-              context.ADDL_PBX_FRAMEWORK_GROUP += '            $fileID /* $lib */,\n';
-           }
         }
+		
+		context.frameworkSearchPaths = [];
+		
+		for (dependency in project.dependencies) {
+			
+			var name = null;
+			var path = null;
+			var frameworksPaths:Array<String> = new Array<String>();
+			frameworksPaths.push("/System/Library/Frameworks/");
+			frameworksPaths.push("/Library/Frameworks/");
+			frameworksPaths.push("/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/");
+
+			if (Path.extension (dependency.name) == "framework") {
+				
+				name = dependency.name;
+				path = findPathIn(dependency.name, frameworksPaths);
+				
+			} else if (Path.extension (dependency.path) == "framework") {
+				
+				name = Path.withoutDirectory (dependency.path);
+				path = PathHelper.tryFullPath (dependency.path);
+				
+			}
+			
+			if (name != null) {
+				
+				var frameworkID = "11C0000000000018" + StringHelper.getUniqueID ();
+				var fileID = "11C0000000000018" + StringHelper.getUniqueID ();
+				
+				ArrayHelper.addUnique (context.frameworkSearchPaths, Path.directory (path));
+				
+				context.ADDL_PBX_BUILD_FILE += "		" + frameworkID + " /* " + name + " in Frameworks */ = {isa = PBXBuildFile; fileRef = " + fileID + " /* " + name + " */; };\n";
+				context.ADDL_PBX_FILE_REFERENCE += "		" + fileID + " /* " + name + " */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = \"" + name + "\"; path = \"" + path + "\"; sourceTree = SDKROOT; };\n";
+				context.ADDL_PBX_FRAMEWORKS_BUILD_PHASE += "				" + frameworkID + " /* " + name + " in Frameworks */,\n";
+				context.ADDL_PBX_FRAMEWORK_GROUP += "				" + fileID + " /* " + name + " */,\n";
+				
+			}
+			
+		}
 
       context.PRERENDERED_ICON = config.prerenderedIcon;
       context.FRAMEWORK_IMPORTS = imports.join("\n");
@@ -327,6 +347,15 @@ ${hxcpp_include}';
       //updateIcon();
       //updateLaunchImage();
    }
+   
+   private function findPathIn(fileName:String, paths:Array<String>):String
+	{
+		for (dir in paths)
+			if (FileSystem.exists(dir + fileName))
+				return dir + fileName;
+
+		return null;
+	}
 
    private function getAbsolutePath(binary:String): String {
        var process:Process = new Process("which", [binary]);
