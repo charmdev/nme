@@ -222,8 +222,7 @@ ${hxcpp_include}';
 
       context.VALID_ARCHS = valid_archs.join(" ");
       context.THUMB_SUPPORT = hasArch(ARMV6) ? "GCC_THUMB_SUPPORT = NO;" : "";
-      context.KEY_STORE_IDENTITY = "iPhone Developer";
-
+      context.KEY_STORE_IDENTITY = (project.certificate != null && project.certificate.identity != null) ? project.certificate.identity : "iPhone Developer";
 
       var customIOSproperties = [];
       for(key in project.customIOSproperties.keys()) {
