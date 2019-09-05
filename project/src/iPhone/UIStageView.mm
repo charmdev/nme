@@ -41,6 +41,17 @@ namespace nme { int gFixedOrientation = -1; }
    #define APP_LOG(x) { }
 #endif
 
+static const int iPhoneXScreenWidth = 2436;
+
+bool isIphoneX(int screenWidth)
+{
+    return (screenWidth == iPhoneXScreenWidth);
+}
+
+CGFloat touchOffsetX(int screenWidth)
+{
+    return isIphoneX(screenWidth) ? 30.0f : 0.0f;
+}
 
 #ifndef IPHONESIM
 CMMotionManager *sgCmManager = 0;
@@ -533,7 +544,10 @@ static std::string nmeTitle;
    return NO;
 }
 
-
+- (CGFloat)getTouchDx
+{
+    return touchOffsetX((int)[[UIScreen mainScreen] nativeBounds].size.height);
+}
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -553,7 +567,7 @@ static std::string nmeTitle;
 
       if (mMultiTouch)
       {
-         Event mouse(etTouchBegin, thumbPoint.x*dpiScale, thumbPoint.y*dpiScale);
+         Event mouse(etTouchBegin, (thumbPoint.x - [self getTouchDx])*dpiScale, thumbPoint.y*dpiScale);
          mouse.value = [aTouch hash];
          if (mouse.value==mPrimaryTouchHash)
             mouse.flags |= efPrimaryTouch;
@@ -561,7 +575,7 @@ static std::string nmeTitle;
       }
       else
       {
-         Event mouse(etMouseDown, thumbPoint.x*dpiScale, thumbPoint.y*dpiScale);
+         Event mouse(etMouseDown, (thumbPoint.x - [self getTouchDx])*dpiScale, thumbPoint.y*dpiScale);
          mouse.flags |= efLeftDown;
          mouse.flags |= efPrimaryTouch;
          mStage->OnEvent(mouse);
@@ -584,7 +598,7 @@ static std::string nmeTitle;
 
       if (mMultiTouch)
       {
-         Event mouse(etTouchMove, thumbPoint.x*dpiScale, thumbPoint.y*dpiScale);
+         Event mouse(etTouchMove, (thumbPoint.x - [self getTouchDx])*dpiScale, thumbPoint.y*dpiScale);
          mouse.value = [aTouch hash];
          if (mouse.value==mPrimaryTouchHash)
             mouse.flags |= efPrimaryTouch;
@@ -592,7 +606,7 @@ static std::string nmeTitle;
       }
       else
       {
-         Event mouse(etMouseMove, thumbPoint.x*dpiScale, thumbPoint.y*dpiScale);
+         Event mouse(etMouseMove, (thumbPoint.x - [self getTouchDx])*dpiScale, thumbPoint.y*dpiScale);
          mouse.flags |= efLeftDown;
          mouse.flags |= efPrimaryTouch;
          mStage->OnEvent(mouse);
@@ -615,7 +629,7 @@ static std::string nmeTitle;
 
       if (mMultiTouch)
       {
-         Event mouse(etTouchEnd, thumbPoint.x*dpiScale, thumbPoint.y*dpiScale);
+         Event mouse(etTouchEnd, (thumbPoint.x - [self getTouchDx])*dpiScale, thumbPoint.y*dpiScale);
          mouse.value = [aTouch hash];
          if (mouse.value==mPrimaryTouchHash)
          {
@@ -626,7 +640,7 @@ static std::string nmeTitle;
       }
       else
       {
-         Event mouse(etMouseUp, thumbPoint.x*dpiScale, thumbPoint.y*dpiScale);
+         Event mouse(etMouseUp, (thumbPoint.x - [self getTouchDx])*dpiScale, thumbPoint.y*dpiScale);
          mouse.flags |= efPrimaryTouch;
          mStage->OnEvent(mouse);
       }
@@ -1876,10 +1890,13 @@ bool NMEStage::getMultitouchActive()
 void NMEStage::OnOGLResize(int width, int height)
 {   
    //printf("OnOGLResize %dx%d\n", width, height);
-   Event evt(etResize);
-   evt.x = width;
-   evt.y = height;
-   OnEvent(evt);
+   if (!isIphoneX(width))
+   {
+      Event evt(etResize);
+      evt.x = width;
+      evt.y = height;
+      HandleEvent(evt);
+   }
 
 }
 
@@ -2044,6 +2061,10 @@ bool nmeIsMain = true;
    APP_LOG(@"viewDidAppear");
    CGRect bounds = self.view.bounds;
  
+   if([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone)
+   {
+      self.view.bounds = CGRectInset(self.view.frame, touchOffsetX((int)[[UIScreen mainScreen] nativeBounds].size.height), 0.0f);
+   }
 
    if (!isFirstAppearance)
    {
