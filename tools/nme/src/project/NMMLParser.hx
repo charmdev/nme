@@ -1033,18 +1033,34 @@ class NMMLParser
 				   }
 
                case "dependency":
-                  var name = element.has.name ? substitute(element.att.name) : "";
-                  if (name!="QuartzCore.framework")
-                  {
-                     var path = element.has.path ? substitute(element.att.path) : "";
-                     var sourceTree = element.has.sourceTree ? substitute(element.att.sourceTree) : "";
-                     var key = name!="" ? name : path;
-                     if (key=="")
-                        Log.error("dependency node should have a name and/or a path");
-                      var dependency = new Dependency(name, path, extensionPath);
-                      dependency.sourceTree = sourceTree;
-                      project.dependencies.set(key, dependency);
-                  }
+				var name = "";
+				var path = "";
+				
+				if (element.has.path) 
+					path = PathHelper.combine(extensionPath, substitute(element.att.path));
+				
+				if (element.has.name) 
+				{
+					var foundName = substitute(element.att.name);
+					
+					if (StringTools.endsWith (foundName, ".a") || StringTools.endsWith (foundName, ".dll")) 
+						path = PathHelper.combine(extensionPath, foundName);
+					else 
+						name = foundName;
+				}
+				
+				var sourceTree = element.has.sourceTree ? substitute(element.att.sourceTree) : "";
+				
+				var key = (name != "") ? name : path;
+				
+				if (project.dependencies.exists(key))
+				{
+					project.dependencies.remove(key);
+				}
+				
+				var dependency = new Dependency(name, path, extensionPath);
+                dependency.sourceTree = sourceTree;
+				project.dependencies.set(key, dependency);
 
                 case "otherLinkerFlags":
                     var value = element.has.value ? substitute(element.att.value) : "";
@@ -1144,6 +1160,9 @@ class NMMLParser
 
                      if (element.has.resolve("linker-flags")) 
                         project.iosConfig.linkerFlags = project.iosConfig.linkerFlags.concat(substitute(element.att.resolve("linker-flags")).split(" "));
+					
+                     if (element.has.resolve("enable-bitcode")) 
+                        project.iosConfig.enableBitcode = (substitute(element.att.resolve("enable-bitcode")) == "true");
                   }
                default:
                   if (inWarnUnknown)

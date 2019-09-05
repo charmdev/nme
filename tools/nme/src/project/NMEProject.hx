@@ -85,6 +85,7 @@ class IOSConfig
    public var prerenderedIcon:Bool;
    public var viewTestDir:String;
    public var sourceFlavour:String;
+   public var enableBitcode:Bool;
 
    public function new()
    {
@@ -95,6 +96,7 @@ class IOSConfig
       viewTestDir =  "";
       prerenderedIcon =  false;
       sourceFlavour = "cpp";
+	  enableBitcode = false;
    }
 }
 

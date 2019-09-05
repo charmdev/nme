@@ -1,5 +1,6 @@
 package platforms;
 
+import haxe.Json;
 import haxe.io.Path;
 import haxe.Template;
 import sys.io.File;
@@ -166,12 +167,17 @@ class IOSPlatform extends Platform
       context.HXCPP_INCLUDE_DIR = hxcpp_include;
       context.NME_IOS_INCLUDE = 'haxe/cpp/include';
 
-
+	
+	  if (project.certificate == null || project.certificate.identity == null) 
+	  {
+         project.certificate = new Keystore(null);
+         project.certificate.identity = "iPhone Developer";
+	  }
+	  
       if (project.watchProject!=null)
       {
          context.NME_WATCHOS = true;
-         context.NME_WATCHOS_INCLUDE = '../watchos/haxe/cpp/include
-${hxcpp_include}';
+         context.NME_WATCHOS_INCLUDE = '../watchos/haxe/cpp/include${hxcpp_include}';
 
          if (project.watchProject.window.ui=="spritekit")
          {
@@ -191,19 +197,35 @@ ${hxcpp_include}';
           context.DEVELOPMENT_TEAM = devTeam;
 
 
-      linkedLibraries = [];
-      for(dependency in project.dependencies)
-         if (dependency.isLibrary())
-         {
-            var filename = dependency.getFilename();
-            linkedLibraries.push(filename);
-         }
-
-      context.linkedLibraries = linkedLibraries;
-
+      context.linkedLibraries = [];
+		
+		for (dependency in project.dependencies) 
+		{
+			if (!StringTools.endsWith(dependency.name, ".framework") && !StringTools.endsWith(dependency.path, ".framework")) 
+			{
+				if (dependency.path != "") 
+				{
+					var name = Path.withoutDirectory(Path.withoutExtension (dependency.path));
+					
+					config.linkerFlags.push("-force_load $SRCROOT/$PRODUCT_NAME/lib/$CURRENT_ARCH/" + Path.withoutDirectory(dependency.path));
+					
+					if (StringTools.startsWith(name, "lib")) 
+					{
+						name = name.substring (3, name.length);
+					}
+					
+					context.linkedLibraries.push(name);
+					
+				} 
+				else if (dependency.name != "") 
+				{
+					context.linkedLibraries.push(dependency.name);
+				}	
+			}	
+		}
+	  
       var valid_archs = new Array<String>();
       var current_archs = new Array<String>();
-
 
       for(architecture in project.architectures)
       {
@@ -223,6 +245,7 @@ ${hxcpp_include}';
       context.VALID_ARCHS = valid_archs.join(" ");
       context.THUMB_SUPPORT = hasArch(ARMV6) ? "GCC_THUMB_SUPPORT = NO;" : "";
       context.KEY_STORE_IDENTITY = (project.certificate != null && project.certificate.identity != null) ? project.certificate.identity : "iPhone Developer";
+
 
       var customIOSproperties = [];
       for(key in project.customIOSproperties.keys()) {
@@ -262,8 +285,20 @@ ${hxcpp_include}';
          context.OBJC_ARC = true;
       }
 
+	  context.ENABLE_BITCODE = config.enableBitcode;
       context.IOS_COMPILER = config.compiler;
-      context.IOS_LINKER_FLAGS = config.linkerFlags.join(", ");
+      context.IOS_LINKER_FLAGS = ["-stdlib=libc++"].concat(config.linkerFlags);
+	  context.CPP_BUILD_LIBRARY = "hxcpp";
+	  
+	  var json = Json.parse(File.getContent(hxcpp + "/haxelib.json"));
+	  if (Std.parseFloat (json.version) > 3.1) 
+	  {
+         context.CPP_LIBPREFIX = "lib";
+	  } 
+	  else 
+	  {
+         context.CPP_LIBPREFIX = "";
+	  }
 
       context.otherLinkerFlags = project.otherLinkerFlags;
       context.frameworkSearchPaths = project.frameworkSearchPaths;
@@ -291,21 +326,11 @@ ${hxcpp_include}';
       context.ADDL_PBX_FRAMEWORKS_BUILD_PHASE = "";
       context.ADDL_PBX_FRAMEWORK_GROUP = "";
       var imports = new Array<String>();
-
-      for(dependency in project.dependencies)
-        if (dependency.isFramework())
-        {
-           var lib = dependency.getFramework();
-           if(dependency.path == '' && false)
-           {
-              imports.push( "@import " + lib.split(".framework")[0] + ";" );
-           }
-        }
+	  
+      context.frameworkSearchPaths = [];
 		
-		context.frameworkSearchPaths = [];
-		
-		for (dependency in project.dependencies) {
-			
+      for (dependency in project.dependencies) 
+      {
 			var name = null;
 			var path = null;
 			var frameworksPaths:Array<String> = new Array<String>();
@@ -313,24 +338,24 @@ ${hxcpp_include}';
 			frameworksPaths.push("/Library/Frameworks/");
 			frameworksPaths.push("/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/");
 
-			if (Path.extension (dependency.name) == "framework") {
-				
+			if (Path.extension(dependency.name) == "framework") 
+			{
 				name = dependency.name;
 				path = findPathIn(dependency.name, frameworksPaths);
 				
-			} else if (Path.extension (dependency.path) == "framework") {
-				
-				name = Path.withoutDirectory (dependency.path);
-				path = PathHelper.tryFullPath (dependency.path);
-				
+			} 
+			else if (Path.extension(dependency.path) == "framework") 
+			{
+				name = Path.withoutDirectory(dependency.path);
+				path = PathHelper.tryFullPath(dependency.path);
 			}
 			
-			if (name != null) {
+			if (name != null) 
+			{
+				var frameworkID = "11C0000000000018" + StringHelper.getUniqueID();
+				var fileID = "11C0000000000018" + StringHelper.getUniqueID();
 				
-				var frameworkID = "11C0000000000018" + StringHelper.getUniqueID ();
-				var fileID = "11C0000000000018" + StringHelper.getUniqueID ();
-				
-				ArrayHelper.addUnique (context.frameworkSearchPaths, Path.directory (path));
+				ArrayHelper.addUnique(context.frameworkSearchPaths, Path.directory (path));
 				
 				context.ADDL_PBX_BUILD_FILE += "		" + frameworkID + " /* " + name + " in Frameworks */ = {isa = PBXBuildFile; fileRef = " + fileID + " /* " + name + " */; };\n";
 				context.ADDL_PBX_FILE_REFERENCE += "		" + fileID + " /* " + name + " */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = \"" + name + "\"; path = \"" + path + "\"; sourceTree = SDKROOT; };\n";
@@ -343,12 +368,13 @@ ${hxcpp_include}';
 
       context.PRERENDERED_ICON = config.prerenderedIcon;
       context.FRAMEWORK_IMPORTS = imports.join("\n");
+	  context.HXML_PATH = PathHelper.findTemplate(project.templatePaths, "ios/haxe/Build.hxml");
 
       //updateIcon();
       //updateLaunchImage();
    }
    
-   private function findPathIn(fileName:String, paths:Array<String>):String
+	private function findPathIn(fileName:String, paths:Array<String>):String
 	{
 		for (dir in paths)
 			if (FileSystem.exists(dir + fileName))
@@ -571,7 +597,6 @@ ${hxcpp_include}';
       copyTemplateDir(getHaxeTemplateDir(), haxeDir, true, false);
 	  
 	  copyTemplate("ios/haxe/Build.hxml", haxeDir + "/build.hxml");
-	  copyTemplate("ios/haxe/makefile", haxeDir + "/makefile");
    }
 
    override public function updateLibs()
@@ -924,14 +949,14 @@ ${hxcpp_include}';
             configuration = "Debug";
         }
 		
-		var identity = "iPhone Developer";
+        var identity = "iPhone Developer";
 
         if (project.certificate != null && project.certificate.identity != null) 
 		{
 			identity = project.certificate.identity;
 		}
 		
-		var commands = [ "-s", identity ];
+		var commands = ["-s", identity];
 
         if (entitlementsPath != null) 
         {
