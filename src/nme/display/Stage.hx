@@ -195,6 +195,12 @@ class Stage extends DisplayObjectContainer implements nme.app.IPollClient implem
       nmeFrameMemIndex = 0;
       #end
    }
+   
+   public function getNotchHeight():Int
+   {
+	   var notchHeight:Int = nme_get_notch_height_stage(nmeHandle);
+	   return notchHeight;
+   }
 
    public static dynamic function getOrientation():Int 
    {
@@ -1112,6 +1118,7 @@ class Stage extends DisplayObjectContainer implements nme.app.IPollClient implem
    private static var nme_render_stage = PrimeLoader.load("nme_render_stage", "ov");
    private static var nme_set_render_gc_free = PrimeLoader.load("nme_set_render_gc_free", "bv");
    private static var nme_stage_get_focus_id = PrimeLoader.load("nme_stage_get_focus_id", "oi");
+   private static var nme_get_notch_height_stage = PrimeLoader.load("nme_get_notch_height_stage", "oo");
    private static var nme_stage_set_focus = PrimeLoader.load("nme_stage_set_focus", "oov");
    private static var nme_stage_get_focus_rect = PrimeLoader.load("nme_stage_get_focus_rect", "ob");
    private static var nme_stage_set_focus_rect = PrimeLoader.load("nme_stage_set_focus_rect", "obv");

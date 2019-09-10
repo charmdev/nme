@@ -1302,11 +1302,19 @@ value nme_get_frame_stage(value inValue)
    if (!AbstractToObject(inValue,frame))
       return alloc_null();
    
-
    return ObjectToAbstract(frame->GetStage());
 }
 DEFINE_PRIME1(nme_get_frame_stage);
 
+value nme_get_notch_height_stage(value inValue)
+{
+   Stage *stage;
+   if (AbstractToObject(inValue,stage))
+      return alloc_int(stage->GetNotchHeight());
+
+   return alloc_int(0);
+}
+DEFINE_PRIME1(nme_get_notch_height_stage);
 
 AutoGCRoot *sOnCreateCallback = 0;
 
@@ -1539,6 +1547,7 @@ bool nme_stage_check_cache(value inStage)
    return false;
 }
 DEFINE_PRIME1(nme_stage_check_cache);
+
 
 
 void nme_set_render_gc_free(bool inGcFree)

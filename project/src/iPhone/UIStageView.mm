@@ -41,6 +41,17 @@ namespace nme { int gFixedOrientation = -1; }
    #define APP_LOG(x) { }
 #endif
 
+static const int iPhoneXScreenWidth = 2436;
+
+bool isIphoneX(int screenWidth)
+{
+    return (screenWidth == iPhoneXScreenWidth);
+}
+
+int notchHeight(int screenWidth)
+{
+    return isIphoneX(screenWidth) ? 90 : 0;
+}
 
 #ifndef IPHONESIM
 CMMotionManager *sgCmManager = 0;
@@ -339,9 +350,7 @@ static std::string nmeTitle;
    //and they can disable AA selectively on devices themselves 
    //rather than hardcoding it here.
    multisampling = sgEnableMSAA2 || sgEnableMSAA4;
-
-
-
+   
    // Get the layer
    mLayer = (CAEAGLLayer *)self.layer;
 
@@ -2055,6 +2064,10 @@ bool nmeIsMain = true;
          sOnFrame( new IOSViewFrame(nmeStage) );
       }
    }
+   
+	if ([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone) {
+		nmeStage->SetNotchHeight(notchHeight(nmeStage->Width()));
+	}
 }
 
 
