@@ -42,15 +42,16 @@ namespace nme { int gFixedOrientation = -1; }
 #endif
 
 static const int iPhoneXScreenWidth = 2436;
+static const int iPhone11ProScreenWidth = 2688;
 
-bool isIphoneX(int screenWidth)
+bool hasNotch(int screenWidth)
 {
-    return (screenWidth == iPhoneXScreenWidth);
+    return (screenWidth == iPhoneXScreenWidth || screenWidth == iPhone11ProScreenWidth);
 }
 
 int notchHeight(int screenWidth)
 {
-    return isIphoneX(screenWidth) ? 90 : 0;
+    return hasNotch(screenWidth) ? 30 : 0;
 }
 
 #ifndef IPHONESIM
