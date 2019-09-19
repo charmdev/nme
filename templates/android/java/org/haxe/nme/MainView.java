@@ -29,11 +29,6 @@ import android.app.Activity;
 import android.graphics.PixelFormat;
 import android.view.View;
 
-::if (ANDROID_TARGET_SDK_VERSION >= 28)::
-import android.view.WindowInsets;
-import android.view.DisplayCutout;
-::end::
-
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
@@ -263,28 +258,32 @@ class MainView extends GLSurfaceView {
    private void calculateNotch()
    {
 	  ::if (ANDROID_TARGET_SDK_VERSION >= 28)::
-      if (notchCalculated)
-      {
-          return;
-      }
+	  int sdk = android.os.Build.VERSION.SDK_INT;
+	  if (sdk >= android.os.Build.VERSION_CODES.P)
+	  {
+		  if (notchCalculated)
+		  {
+			  return;
+		  }
 
-      WindowInsets insets = getRootWindowInsets();
-      if (insets == null)
-      {
-          return;
-      }
+		  android.view.WindowInsets insets = getRootWindowInsets();
+		  if (insets == null)
+		  {
+			  return;
+		  }
 
-      DisplayCutout cutout = insets.getDisplayCutout();
-      if (cutout == null)
-      {
-          return;
-      }
+		  android.view.DisplayCutout cutout = insets.getDisplayCutout();
+		  if (cutout == null)
+		  {
+			  return;
+		  }
 
-      notch = Math.max(cutout.getSafeInsetLeft(), cutout.getSafeInsetRight());
-      notch = Math.max(notch, cutout.getSafeInsetTop());
-      notch = Math.max(notch, cutout.getSafeInsetBottom());
+		  notch = Math.max(cutout.getSafeInsetLeft(), cutout.getSafeInsetRight());
+		  notch = Math.max(notch, cutout.getSafeInsetTop());
+		  notch = Math.max(notch, cutout.getSafeInsetBottom());
 
-      notchCalculated = true;
+		  notchCalculated = true;
+	  }
 	  ::end::
    }
    
@@ -292,10 +291,15 @@ class MainView extends GLSurfaceView {
    {
 	   ::if (ANDROID_TARGET_SDK_VERSION >= 28)::
        mActivity.updateDeviceOrientation();
-	   if (!notchSet)
+	   int sdk = android.os.Build.VERSION.SDK_INT;
+	   if (sdk >= android.os.Build.VERSION_CODES.P)
 	   {
-		   calculateNotch();
-		   notchSet = (NME.setNotchHeight(notch) == 0);
+		   if (!notchSet)
+		   {
+				calculateNotch();
+				notchSet = (NME.setNotchHeight(notch) == 0);
+		   }
+		   
 	   }
 	   ::end::
    }
