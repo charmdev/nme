@@ -156,9 +156,13 @@ implements SensorEventListener
       requestWindowFeature(Window.FEATURE_NO_TITLE);
 	  
 	  ::if (ANDROID_TARGET_SDK_VERSION >= 28)::
-	  WindowManager.LayoutParams windowParams = getWindow().getAttributes();
-      windowParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-      getWindow().setAttributes(windowParams);
+	  int sdk = android.os.Build.VERSION.SDK_INT;
+	  if (sdk >= android.os.Build.VERSION_CODES.P)
+	  {
+		  WindowManager.LayoutParams windowParams = getWindow().getAttributes();
+		  windowParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+		  getWindow().setAttributes(windowParams);
+	  }
 	  ::end::
 	  
       getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
