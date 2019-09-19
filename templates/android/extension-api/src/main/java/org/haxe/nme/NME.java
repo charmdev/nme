@@ -15,6 +15,7 @@ public class NME {
      public static final int DEACTIVATE = 2;
      public static final int DESTROY    = 3;
 
+     public static native int setNotchHeight(int notchHeight);
      public static native int onDeviceOrientationUpdate(int orientation);
      public static native int onNormalOrientationFound(int orientation);
      public static native int onOrientationUpdate(float x, float y, float z);

@@ -154,6 +154,11 @@ implements SensorEventListener
       mContext = this;
       mAssets = getAssets();
       requestWindowFeature(Window.FEATURE_NO_TITLE);
+	  
+	  WindowManager.LayoutParams windowParams = getWindow().getAttributes();
+      windowParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+      getWindow().setAttributes(windowParams);
+	  
       getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
       ::end::
 
@@ -984,7 +989,10 @@ implements SensorEventListener
       //NME.onDeviceOrientationUpdate(prepareDeviceOrientation());
    }
 
-  
+   public void updateDeviceOrientation()
+   {
+      NME.onDeviceOrientationUpdate(prepareDeviceOrientation());
+   }
    
    public static void postUICallback(final long inHandle)
    {

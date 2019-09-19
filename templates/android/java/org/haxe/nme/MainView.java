@@ -29,6 +29,11 @@ import android.app.Activity;
 import android.graphics.PixelFormat;
 import android.view.View;
 
+::if (ANDROID_TARGET_SDK_VERSION >= 28)::
+import android.view.WindowInsets;
+import android.view.DisplayCutout;
+::end::
+
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLContext;
@@ -70,7 +75,9 @@ class MainView extends GLSurfaceView {
    Semaphore pendingTimerSemaphore;
    boolean renderPending = false;
 
-
+   boolean notchCalculated = false;
+   boolean notchSet = false;
+   int notch = 0;
    
   //private InputDevice device;
     public MainView(Context context,GameActivity inActivity, boolean inTranslucent)
@@ -252,11 +259,51 @@ class MainView extends GLSurfaceView {
          setZOrderMediaOverlay(true);
       }
    }
+   
+   private void calculateNotch()
+   {
+	  ::if (ANDROID_TARGET_SDK_VERSION >= 28)::
+      if (notchCalculated)
+      {
+          return;
+      }
+
+      WindowInsets insets = getRootWindowInsets();
+      if (insets == null)
+      {
+          return;
+      }
+
+      DisplayCutout cutout = insets.getDisplayCutout();
+      if (cutout == null)
+      {
+          return;
+      }
+
+      notch = Math.max(cutout.getSafeInsetLeft(), cutout.getSafeInsetRight());
+      notch = Math.max(notch, cutout.getSafeInsetTop());
+      notch = Math.max(notch, cutout.getSafeInsetBottom());
+
+      notchCalculated = true;
+	  ::end::
+   }
+   
+   public void UpdateOrientationAndNotch()
+   {
+	   ::if (ANDROID_TARGET_SDK_VERSION >= 28)::
+       mActivity.updateDeviceOrientation();
+	   if (!notchSet)
+	   {
+		   calculateNotch();
+		   notchSet = (NME.setNotchHeight(notch) == 0);
+	   }
+	   ::end::
+   }
 
    // Haxe thread
    public void HandleResult(int inCode)
    {
-       if (inCode==resTerminate)
+	   if (inCode==resTerminate)
        {
           //Log.v("VIEW","Terminate Request.");
           mActivity.onNMEFinish();
@@ -353,7 +400,7 @@ class MainView extends GLSurfaceView {
         }
         return super.onGenericMotionEvent(event);
     }
-
+	
    @Override
    public void onPause () {
        Log.v("NME","onPause");
@@ -530,6 +577,7 @@ class MainView extends GLSurfaceView {
                 }
             }
             else {
+				mMainView.UpdateOrientationAndNotch();
                 mMainView.renderPending = false;
                 mMainView.HandleResult( NME.onRender() );
                 Sound.checkSoundCompletion();

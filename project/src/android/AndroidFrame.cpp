@@ -782,7 +782,6 @@ JAVA_EXPORT int JNICALL Java_org_haxe_nme_NME_onResize(JNIEnv * env, jobject obj
    return nme::GetResult();
 }
 
-
 JAVA_EXPORT int JNICALL Java_org_haxe_nme_NME_onContextLost(JNIEnv * env, jobject obj)
 {
    // Delay the result to just prior to render - docs seem to say you should
@@ -871,6 +870,17 @@ JAVA_EXPORT int JNICALL Java_org_haxe_nme_NME_onTrackball(JNIEnv * env, jobject 
    if (nme::sStage)
       nme::sStage->OnTrackball(dx,dy);
    return nme::GetResult();
+}
+
+JAVA_EXPORT int JNICALL Java_org_haxe_nme_NME_setNotchHeight(JNIEnv * env, jobject obj, jint notchHeight)
+{
+   AutoHaxe haxe("setNotchHeight");
+   if (nme::sStage)
+   {
+	   nme::sStage->SetNotchHeight(notchHeight);
+   }
+   
+   return -1;
 }
 
 JAVA_EXPORT int JNICALL Java_org_haxe_nme_NME_onKeyChange(JNIEnv * env, jobject obj, int keyCode, int charCode, bool down, bool isChar)
