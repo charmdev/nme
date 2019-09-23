@@ -70,7 +70,6 @@ class MainView extends GLSurfaceView {
    Semaphore pendingTimerSemaphore;
    boolean renderPending = false;
 
-   boolean notchCalculated = false;
    boolean notchSet = false;
    int notch = 0;
    
@@ -255,17 +254,21 @@ class MainView extends GLSurfaceView {
       }
    }
    
+   ::if (ANDROID_TARGET_SDK_VERSION >= 28)::
+   @Override
+   public android.view.WindowInsets onApplyWindowInsets(android.view.WindowInsets insets)
+   {
+	  calculateNotch();
+	  return insets;
+   }
+   ::end::
+   
    private void calculateNotch()
    {
 	  ::if (ANDROID_TARGET_SDK_VERSION >= 28)::
 	  int sdk = android.os.Build.VERSION.SDK_INT;
 	  if (sdk >= android.os.Build.VERSION_CODES.P)
 	  {
-		  if (notchCalculated)
-		  {
-			  return;
-		  }
-
 		  android.view.WindowInsets insets = getRootWindowInsets();
 		  if (insets == null)
 		  {
@@ -281,8 +284,6 @@ class MainView extends GLSurfaceView {
 		  notch = Math.max(cutout.getSafeInsetLeft(), cutout.getSafeInsetRight());
 		  notch = Math.max(notch, cutout.getSafeInsetTop());
 		  notch = Math.max(notch, cutout.getSafeInsetBottom());
-
-		  notchCalculated = true;
 	  }
 	  ::end::
    }
@@ -296,7 +297,6 @@ class MainView extends GLSurfaceView {
 	   {
 		   if (!notchSet)
 		   {
-				calculateNotch();
 				notchSet = (NME.setNotchHeight(notch) == 0);
 		   }
 		   
