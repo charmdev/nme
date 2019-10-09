@@ -127,6 +127,7 @@ class NMEStage;
 
 - (void) createOGLFramebuffer;
 - (void) destroyOGLFramebuffer;
+- (void) recreateFB;
 @end
 
 
@@ -171,6 +172,7 @@ public:
    bool           multiTouchEnabled;
    bool           haveOpaqueBg;
    bool           wantOpaqueBg;
+   bool           needRecreateFB;
 
    NMEStage(CGRect inRect);
    ~NMEStage();
@@ -275,6 +277,12 @@ static NSString *sgDisplayLinkMode = NSRunLoopCommonModes;
    {
       if (stage->nmeView->mOGLContext && [EAGLContext currentContext] != stage->nmeView->mOGLContext)
          [EAGLContext setCurrentContext:stage->nmeView->mOGLContext];  
+
+      if (stage->needRecreateFB)
+      {
+         [stage->nmeView recreateFB];
+      }
+
       Event evt(etPoll);
       stage->OnEvent(evt);
    }
@@ -1055,9 +1063,7 @@ static std::string nmeTitle;
    }
 }
 
-
-
-- (void) layoutSubviews
+- (void) recreateFB
 {
    [EAGLContext setCurrentContext:mOGLContext];
    [self destroyOGLFramebuffer];
@@ -1067,6 +1073,13 @@ static std::string nmeTitle;
    mHardwareRenderer->SetWindowSize(backingWidth,backingHeight);
 
    mStage->OnOGLResize(backingWidth,backingHeight);
+
+   mStage->needRecreateFB = false;
+}
+
+- (void) layoutSubviews
+{
+   mStage->needRecreateFB = true;
 }
 
 #ifndef OBJC_ARC
@@ -1696,6 +1709,7 @@ NMEStage::NMEStage(CGRect inRect) : nme::Stage(true)
 
    haveOpaqueBg = true;
    wantOpaqueBg = true;
+   needRecreateFB = false;
 
    NSString* platform = [UIDeviceHardware platformString];
    //printf("Detected hardware: %s\n", [platform UTF8String]);
@@ -2051,6 +2065,7 @@ bool nmeIsMain = true;
    [super didMoveToParentViewController:parent];
 }
 
+
 - (void)viewDidAppear:(BOOL)animated
 {
    APP_LOG(@"viewDidAppear");
@@ -2072,6 +2087,7 @@ bool nmeIsMain = true;
    }
 }
 
+/*
 - (void)viewWillAppear:(BOOL)animated
 {
    APP_LOG(@"viewWillAppear");
@@ -2092,7 +2108,7 @@ bool nmeIsMain = true;
       }
    }
 }
-
+*/
 
 - (void)didReceiveMemoryWarning
 {
