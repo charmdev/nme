@@ -17,6 +17,10 @@
 #define NME_NO_LZMA
 #endif
 
+#if defined(IPHONE)
+#define NME_NO_CAMERA
+#endif
+
 #ifdef ANDROID
 #include <android/log.h>
 #endif
@@ -52,7 +56,10 @@
 
 namespace nme
 {
+#ifndef NME_NO_CAMERA
 void InitCamera();
+#endif
+
 void GetGLStats(int *statsArray, int n);
 
 // Not static

@@ -84,7 +84,7 @@
 
    <set name="NME_OPENAL" value="1" if="emscripten" />
 
-   <set name="NME_CAMERA" value="1" unless="emscripten||winrt" />
+   <set name="NME_CAMERA" value="1" unless="emscripten||winrt||iphone" />
 
    <!-- Built relative to "bin" -->
    <set name="NME_ROOT" value="" />
