@@ -2066,7 +2066,6 @@ bool nmeIsMain = true;
          sOnFrame( new IOSViewFrame(nmeStage) );
       }
 
-      APP_LOG(@"viewDidAppear idiom=%li, stageWidth=%i", [[UIDevice currentDevice]userInterfaceIdiom], nmeStage->Width());
       if ([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone) {
          nmeStage->SetNotchHeight(notchHeight(nmeStage->Width()));
       }
@@ -2088,7 +2087,6 @@ bool nmeIsMain = true;
          sOnFrame( new IOSViewFrame(nmeStage) );
       }
 
-       APP_LOG(@"viewWillAppear idiom=%li, stageWidth=%i", [[UIDevice currentDevice]userInterfaceIdiom], nmeStage->Width());
       if ([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone) {
          nmeStage->SetNotchHeight(notchHeight(nmeStage->Width()));
       }
