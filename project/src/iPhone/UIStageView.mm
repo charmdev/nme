@@ -11,6 +11,8 @@
 #import <QuartzCore/CADisplayLink.h>
 #import <CoreMotion/CMMotionManager.h>
 #import <MediaPlayer/MediaPlayer.h>
+//#import <AppsFlyerLib/AppsFlyerTracker.h>
+//#import <Firebase.h>
 
 #include <Display.h>
 #include <Surface.h>
@@ -26,6 +28,8 @@
 #import <OpenGLES/ES2/glext.h>
 
 #include <StageVideo.h>
+
+
 
 using namespace nme;
 
@@ -2047,13 +2051,10 @@ bool nmeIsMain = true;
    [super didMoveToParentViewController:parent];
 }
 
-
-
 - (void)viewDidAppear:(BOOL)animated
 {
    APP_LOG(@"viewDidAppear");
    CGRect bounds = self.view.bounds;
- 
 
    if (!isFirstAppearance)
    {
@@ -2064,11 +2065,34 @@ bool nmeIsMain = true;
          gc_set_top_of_stack(&top,false);
          sOnFrame( new IOSViewFrame(nmeStage) );
       }
+
+      APP_LOG(@"viewDidAppear idiom=%li, stageWidth=%i", [[UIDevice currentDevice]userInterfaceIdiom], nmeStage->Width());
+      if ([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone) {
+         nmeStage->SetNotchHeight(notchHeight(nmeStage->Width()));
+      }
    }
-   
-	if ([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone) {
-		nmeStage->SetNotchHeight(notchHeight(nmeStage->Width()));
-	}
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+   APP_LOG(@"viewWillAppear");
+   CGRect bounds = self.view.bounds;
+
+   if (!isFirstAppearance)
+   {
+      isFirstAppearance = true;
+      if (!nmeIsMain)
+      {
+         int top = 0;
+         gc_set_top_of_stack(&top,false);
+         sOnFrame( new IOSViewFrame(nmeStage) );
+      }
+
+       APP_LOG(@"viewWillAppear idiom=%li, stageWidth=%i", [[UIDevice currentDevice]userInterfaceIdiom], nmeStage->Width());
+      if ([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone) {
+         nmeStage->SetNotchHeight(notchHeight(nmeStage->Width()));
+      }
+   }
 }
 
 
@@ -2121,7 +2145,7 @@ bool nmeIsMain = true;
 
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-   APP_LOG(@"willFinishLaunchingWithOptions");
+   APP_LOG(@"willFinishLaunchingWithOptions UIStageView");
    return YES;
 }
 
