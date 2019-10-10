@@ -2087,7 +2087,6 @@ bool nmeIsMain = true;
    }
 }
 
-/*
 - (void)viewWillAppear:(BOOL)animated
 {
    APP_LOG(@"viewWillAppear");
@@ -2108,7 +2107,6 @@ bool nmeIsMain = true;
       }
    }
 }
-*/
 
 - (void)didReceiveMemoryWarning
 {
