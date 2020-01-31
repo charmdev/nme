@@ -37,7 +37,7 @@ configure(subprojects.findAll {!it.file('build.gradle').exists() && it.file('bui
         repositories {
             google()
             maven {
-                url "http://repo1.maven.org/maven2/"
+                url "https://repo1.maven.org/maven2/"
             }
         }
 		
