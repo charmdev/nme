@@ -701,6 +701,35 @@ ByteArray AndroidGetAssetBytes(const char *inResource)
    return result;
 }
 
+ByteArray& AndroidGetAssetBytesTo(const char *inResource, ByteArray& outBytes)
+{
+   AAsset *asset = AndroidGetAsset(inResource);
+   
+   if (asset)
+   {
+      long size = AAsset_getLength(asset);
+      AAsset_read(asset, outBytes.Bytes(), size);
+      AAsset_close(asset);
+      return outBytes;
+   }
+   
+   JNIEnv *env = GetEnv();
+   
+   jmethodID mid = env->GetStaticMethodID(GameActivity, "getResource", "(Ljava/lang/String;)[B");
+   if (mid == 0)
+      return outBytes;
+   
+   jstring str = env->NewStringUTF( inResource );
+   jbyteArray bytes = (jbyteArray)env->CallStaticObjectMethod(GameActivity, mid, str);
+   env->DeleteLocalRef(str);
+   if (bytes == 0)
+      return outBytes;
+   
+   jint len = env->GetArrayLength(bytes);
+   env->GetByteArrayRegion(bytes, (jint)0, (jint)len, (jbyte*)outBytes.Bytes());
+   return outBytes;
+}
+
 FileInfo AndroidGetAssetFD(const char *inResource)
 {
    FileInfo info;

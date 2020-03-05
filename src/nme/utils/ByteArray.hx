@@ -464,6 +464,12 @@ class ByteArray extends Bytes implements ArrayAccess<Int> implements IDataInput 
    {
       return nme_byte_array_read_file(inString);
    }
+   
+   static public function readFileTo(inString:String, outBytes:ByteArray):ByteArray 
+   {
+      nme_byte_array_read_file_to(inString, outBytes);
+	  return outBytes;
+   }
    #end
 
    public function readFloat():Float 
@@ -815,6 +821,7 @@ class ByteArray extends Bytes implements ArrayAccess<Int> implements IDataInput 
    #if !no_nme_io
    private static var nme_byte_array_overwrite_file = nme.Loader.load("nme_byte_array_overwrite_file", 2);
    private static var nme_byte_array_read_file = nme.Loader.load("nme_byte_array_read_file", 1);
+   private static var nme_byte_array_read_file_to = nme.Loader.load("nme_byte_array_read_file_to", 2);
    #end
    private static var nme_lzma_encode = PrimeLoader.load("nme_lzma_encode", "oo");
    private static var nme_lzma_decode = PrimeLoader.load("nme_lzma_decode", "oo");

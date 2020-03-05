@@ -76,6 +76,27 @@ ByteArray ByteArray::FromFile(const OSChar *inFilename)
    return result;
 }
 
+ByteArray& ByteArray::FromFileTo(const OSChar *inFilename, ByteArray& outBytes)
+{
+   FILE *file = OpenRead(inFilename);
+   if (!file)
+   {
+      #ifdef ANDROID
+      return AndroidGetAssetBytesTo(inFilename, outBytes);
+      #endif
+      return outBytes;
+   }
+
+   fseek(file,0,SEEK_END);
+   int len = ftell(file);
+   fseek(file,0,SEEK_SET);
+
+   int status = fread(outBytes.Bytes(),len,1,file);
+   fclose(file);
+
+   return outBytes;
+}
+
 
 #ifdef HX_WINDOWS
 
@@ -106,6 +127,22 @@ ByteArray ByteArray::FromFile(const char *inFilename)
    fclose(file);
 
    return result;
+}
+
+ByteArray& ByteArray::FromFileTo(const char *inFilename, ByteArray& outBytes)
+{
+   FILE *file = fopen(inFilename,"rb");
+   if (!file)
+      return outBytes;
+
+   fseek(file,0,SEEK_END);
+   int len = ftell(file);
+   fseek(file,0,SEEK_SET);
+
+   fread(outBytes.Bytes(),len,1,file);
+   fclose(file);
+
+   return outBytes;
 }
 #endif
 

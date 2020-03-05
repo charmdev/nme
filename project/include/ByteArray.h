@@ -32,13 +32,16 @@ struct ByteArray
    value mValue;
 
    static ByteArray FromFile(const OSChar *inFilename);
+   static ByteArray& FromFileTo(const OSChar *inFilename, ByteArray& outBytes);
    #ifdef HX_WINDOWS
    static ByteArray FromFile(const char *inFilename);
+   static ByteArray& FromFileTo(const char *inFilename, ByteArray& outBytes);
    #endif
 };
 
 #ifdef ANDROID
 ByteArray AndroidGetAssetBytes(const char *);
+ByteArray& AndroidGetAssetBytesTo(const char *, ByteArray &);
 
 struct FileInfo
 {

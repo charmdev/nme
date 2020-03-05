@@ -936,6 +936,14 @@ value nme_byte_array_read_file(value inFilename)
 }
 DEFINE_PRIM(nme_byte_array_read_file,1);
 
+value nme_byte_array_read_file_to(value inFilename, value outBytes)
+{
+   ByteArray result(outBytes);
+   ByteArray::FromFileTo(val_os_string(inFilename), result);
+   return alloc_null();
+}
+DEFINE_PRIM(nme_byte_array_read_file_to,2);
+
 
 value nme_byte_array_get_native_pointer(value inByteArray)
 {
