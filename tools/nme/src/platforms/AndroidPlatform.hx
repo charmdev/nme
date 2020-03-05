@@ -216,7 +216,7 @@ class AndroidPlatform extends Platform
      
      context.ANDROID_MINIMUM_SDK_VERSION = project.androidConfig.minApiLevel;
      context.ANDROID_BUILD_TOOLS_VERSION = (project.androidConfig.buildToolsVersion != "") ? project.androidConfig.buildToolsVersion : "28.0.2";
-     context.ANDROID_GRADLE_VERSION = (project.androidConfig.gradleVersion != "") ? project.androidConfig.gradleVersion : "4.6";
+     context.ANDROID_GRADLE_VERSION = (project.androidConfig.gradleVersion != "") ? project.androidConfig.gradleVersion : "5.4.1";
      
      if (Reflect.hasField(context, "KEY_STORE")) context.KEY_STORE = StringTools.replace(context.KEY_STORE, "\\", "\\\\");
      if (Reflect.hasField(context, "KEY_STORE_ALIAS")) context.KEY_STORE_ALIAS = StringTools.replace(context.KEY_STORE_ALIAS, "\\", "\\\\");
