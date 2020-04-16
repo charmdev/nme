@@ -850,6 +850,12 @@ class Stage extends DisplayObjectContainer implements nme.app.IPollClient implem
       var evt = new Event(Event.CONTEXT3D_LOST);
       nmeBroadcast(evt);
    }
+   
+   public function onContextRestored():Void
+   {
+      var evt = new Event(Event.CONTEXT3D_CREATE);
+      nmeBroadcast(evt);
+   }
 
 
    // -------------------------

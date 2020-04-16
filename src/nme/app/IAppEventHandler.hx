@@ -18,6 +18,7 @@ interface IAppEventHandler
    public function onSysMessage(event:AppEvent):Void;
    public function onAppLink(event:AppEvent):Void;
    public function onContextLost():Void;
+   public function onContextRestored():Void;
    public function onScroll(event:AppEvent):Void;
    public function onDpiChanged(event:AppEvent):Void;
    public function onUnhandledException(exception:Dynamic, stack:Array<StackItem>):Void;

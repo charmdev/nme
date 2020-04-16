@@ -74,7 +74,10 @@ class NmeApplication implements IAppEventHandler implements IPollClient
    public function onContextLost():Void
    {
    }
-
+   
+   public function onContextRestored():Void
+   {
+   }
 
    public function onKey(event:AppEvent, type:String):Void
    {
