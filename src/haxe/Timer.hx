@@ -208,7 +208,7 @@ class Timer
             #if (cpp && haxe4)
             cpp.NativeArray.setSize(sRunningTimers, timerCount);
             #else
-            sRunningTimers.slice(timerCount, origTimerCount-timerCount);
+            sRunningTimers.splice(timerCount, origTimerCount-timerCount);
             #end
          }
       }
