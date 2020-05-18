@@ -46,11 +46,14 @@ namespace nme { int gFixedOrientation = -1; }
 #endif
 
 static const int iPhoneXScreenWidth = 2436;
+static const int iPhone11ScreenWidth = 1792;
 static const int iPhone11ProScreenWidth = 2688;
 
 bool hasNotch(int screenWidth)
 {
-    return (screenWidth == iPhoneXScreenWidth || screenWidth == iPhone11ProScreenWidth);
+    return (screenWidth == iPhoneXScreenWidth || 
+			screenWidth == iPhone11ScreenWidth ||
+			screenWidth == iPhone11ProScreenWidth);
 }
 
 int notchHeight(int screenWidth)
