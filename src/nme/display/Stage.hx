@@ -207,7 +207,17 @@ class Stage extends DisplayObjectContainer implements nme.app.IPollClient implem
       return nme_stage_get_orientation();
    }
 
-   public static dynamic function getNormalOrientation():Int 
+   public static dynamic function setActivateApp():Int
+   {
+      return nme_set_activate_app();
+   }
+
+   public static dynamic function setDeactivateApp():Int
+   {
+      return nme_set_deactivate_app();
+   }
+
+   public static dynamic function getNormalOrientation():Int
    {
       return nme_stage_get_normal_orientation();
    }
@@ -1132,6 +1142,10 @@ class Stage extends DisplayObjectContainer implements nme.app.IPollClient implem
    private static var nme_stage_show_cursor = PrimeLoader.load("nme_stage_show_cursor", "obv");
   
    private static var nme_stage_get_orientation = PrimeLoader.load("nme_stage_get_orientation", "i");
+
+   private static var nme_set_deactivate_app = PrimeLoader.load("nme_set_deactivate_app", "i");
+   private static var nme_set_activate_app = PrimeLoader.load("nme_set_activate_app", "i");
+
    private static var nme_stage_get_normal_orientation = PrimeLoader.load("nme_stage_get_normal_orientation", "i");
    private static var nme_stage_check_cache = PrimeLoader.load("nme_stage_check_cache", "ob");
 }

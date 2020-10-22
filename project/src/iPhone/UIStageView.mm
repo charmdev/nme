@@ -2223,6 +2223,20 @@ Stage *IPhoneGetStage()
    return sgNmeStage;
 }
 
+
+int SetActivateApp()
+{
+   nme_app_set_active(true);
+   return 1;
+}
+
+int SetDeactivateApp()
+{
+   nme_app_set_active(false);
+   return 0;
+}
+
+
 void StartAnimation()
 {
    if (sgAnimationController)

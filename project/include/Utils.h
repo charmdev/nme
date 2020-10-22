@@ -170,6 +170,9 @@ WString ColorToWide(int value);
 
 void SetIcon( const char *path );
 
+int SetActivateApp();
+int SetDeactivateApp();
+
 int GetDeviceOrientation();
 int GetNormalOrientation();
 double CapabilitiesGetPixelAspectRatio ();

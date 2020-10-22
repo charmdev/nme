@@ -1792,6 +1792,25 @@ int nme_stage_get_orientation() {
 DEFINE_PRIME0(nme_stage_get_orientation);
 
 
+int nme_set_activate_app() {
+   #if defined(IPHONE)
+      return SetActivateApp();
+   #else
+      return 0;
+   #endif  
+}
+DEFINE_PRIME0(nme_set_activate_app);
+
+int nme_set_deactivate_app() {
+   #if defined(IPHONE)
+      return SetDeactivateApp();
+   #else
+      return 0;
+   #endif  
+}
+DEFINE_PRIME0(nme_set_deactivate_app);
+
+
 int nme_stage_get_normal_orientation()
 {
    #if defined(ANDROID)
