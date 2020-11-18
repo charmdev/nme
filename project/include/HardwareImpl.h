@@ -34,6 +34,13 @@ inline unsigned int getProgId( const DrawElement &element, const ColorTransform 
       progId |= PROG_TEXTURE;
       if (element.mSurface->Format()==pfAlpha)
          progId |= PROG_ALPHA_TEXTURE;
+
+      if (element.mSurface->isCompressed())
+         if (((CompressedSurface*) element.mSurface)->hasSepAlpha())
+         {
+				progId |= DRAW_SEP_ALPHA;
+			}
+      }
    }
 
    if (element.mFlags & DRAW_HAS_COLOUR)
