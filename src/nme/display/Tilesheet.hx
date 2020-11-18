@@ -16,6 +16,7 @@ class Tilesheet
    public static inline var TILE_ORIGIN       = 0x0040;
    public static inline var TILE_NO_ID        = 0x0080;
    public static inline var TILE_MOUSE_ENABLE = 0x0100;
+   public static inline var TILE_FIXED_SIZE   = 0x0200;
    public static inline var TILE_BLEND_NORMAL = 0x00000000;
    public static inline var TILE_BLEND_ADD = 0x00010000;
 
@@ -32,14 +33,14 @@ class Tilesheet
 
    public var nmeHandle:NativeHandle;
 
-   public function new(inImage:BitmapData, ?rects:Array<Rectangle>) 
+   public function new(inImage:BitmapData, ?rects:Array<Rectangle>,?inPoint:Point) 
    {
       tileCount = 0;
       nmeBitmap = inImage;
       nmeHandle = nme_tilesheet_create(inImage.nmeHandle);
       if (rects!=null)
          for(rect in rects)
-            addTileRect(rect);
+            addTileRect(rect,inPoint);
    }
 
    public function addTileRect(rectangle:Rectangle, centerPoint:Point = null):Int 
@@ -52,11 +53,15 @@ class Tilesheet
 
    public function getTileRect(index:Int, ?result:Rectangle):Rectangle
    {
-       if (tileCount <= index || index < 0)
+      if (tileCount <= index || index < 0)
+      {
         return null;
-	   
-	   if (result == null)
+      }
+      
+      if (result == null)
+      {
         result =  new Rectangle();
+      }
 	  
       nme_tilesheet_get_rect(nmeHandle, index, result);
       return result;

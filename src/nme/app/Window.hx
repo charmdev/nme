@@ -261,6 +261,9 @@ class Window
 
             case EventId.DpiChanged:
                appEventHandler.onDpiChanged(event);
+
+            case EventId.DropBegin, EventId.DropFile, EventId.DropEnd:
+               appEventHandler.onDrop(event);
          }
 
 

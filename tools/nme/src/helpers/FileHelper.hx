@@ -94,8 +94,8 @@ class FileHelper
                var dir = haxe.io.Path.directory(destination);    
                if (!sys.FileSystem.exists(dir))                  
                {                                                 
-                  sys.FileSystem.createDirectory(dir);      
-               }
+                 sys.FileSystem.createDirectory(dir);      
+               }                                                 
                var fileOutput:FileOutput = File.write(destination, true);
                fileOutput.writeString(result);
                fileOutput.close();

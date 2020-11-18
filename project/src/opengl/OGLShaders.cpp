@@ -1,4 +1,5 @@
 #include "./OGLShaders.h"
+#include <HardwareImpl.h>
 
 #ifdef HX_MAXOS
   #include <OpenGL/glext.h>
@@ -337,17 +338,21 @@ GPUProg *GPUProg::create(unsigned int inID)
 
          if (inID & PROG_ALPHA_TEXTURE)
          {
-			 fragColour += "vec4(1,1,1,texture2D(uImage0,vTexCoord).a)";
-		 }
+			   fragColour += "vec4(1,1,1,texture2D(uImage0,vTexCoord,-0.5).a)";
+         }
          else if (inID & DRAW_SEP_ALPHA) //kukuruz
-		 {
-			 pixelVars += "uniform sampler2D uImage1;\n";
-             fragColour += "vec4(texture2D(uImage0, vTexCoord).xyz, texture2D(uImage1, vTexCoord).x);\n";
-		 }
+		   {
+			   pixelVars += "uniform sampler2D uImage1;\n";
+            fragColour += "vec4(texture2D(uImage0, vTexCoord).xyz, texture2D(uImage1, vTexCoord).x);\n";
+		   }
          else
-		 {
+		   {
             fragColour += "texture2D(uImage0,vTexCoord)";
-		 }
+		   }
+         else
+         {
+            fragColour += "texture2D(uImage0,vTexCoord,-0.5)";
+         }
       }
    }
 

@@ -9,6 +9,7 @@
 <classpath name="src/cppia" if="cppia" />
 <classpath name="src/jsprime" if="jsprime" />
 <classpath name="src/haxe/compat" unless="NME_NO_HAXE_COMPAT" />
+<haxedef name="objc" if="iphone" />
 
 <section unless="display">
 	<dependency name="extension-api" path="templates/android/extension-api" if="android" />

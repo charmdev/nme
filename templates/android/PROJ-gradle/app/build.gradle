@@ -1,92 +1,123 @@
 apply plugin: 'com.android.application'
+::if NME_FIREBASE::
+apply plugin: 'com.google.gms.google-services'
+
+::if NME_FIREBASE_CRASHLYTICS::
+// Apply the Crashlytics Gradle plugin
+apply plugin: 'com.google.firebase.crashlytics'
+::end::
+
+::end::
+
 
 android {
-	compileSdkVersion ::ANDROID_TARGET_SDK_VERSION::
-	buildToolsVersion "::ANDROID_BUILD_TOOLS_VERSION::"
-	
-	defaultConfig {
-		applicationId "::APP_PACKAGE::"
-		minSdkVersion ::ANDROID_MIN_API_LEVEL::
-		targetSdkVersion ::ANDROID_TARGET_API_LEVEL::
-		versionCode ::APP_BUILD_NUMBER::
+    ::if ANDROID_COMPILE_SDK_VERSION::
+    compileSdkVersion ::ANDROID_COMPILE_SDK_VERSION::
+    ::else::
+    // This does not effect the output, only the gradle system and some warnings,
+    //  so can be regularly updated
+    compileSdkVersion 28
+    ::end::
+
+    buildToolsVersion "28.0.3"
+    defaultConfig {
+        applicationId "::APP_PACKAGE::"
+        minSdkVersion ::ANDROID_MIN_API_LEVEL::
+        targetSdkVersion ::ANDROID_TARGET_API_LEVEL::
+        versionCode ::APP_BUILD_NUMBER::
         versionName "::APP_VERSION::"
-		testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-	}
-	
-	::if KEY_STORE::
-	signingConfigs {
-		release {
-			storeFile file(project.KEY_STORE)
-			storePassword project.KEY_STORE_PASSWORD
-			keyAlias project.KEY_STORE_ALIAS
-			keyPassword project.KEY_STORE_ALIAS_PASSWORD
-		}
-	}
-	::else::
-	File signingFile = file('signing.properties')
-	if(signingFile.exists()) {
-		Properties signing = new Properties()
-		signing.load(new FileInputStream(signingFile))
-		
-		signingConfigs {
-			release {
-				storeFile file(signing["KEY_STORE"])
-				storePassword signing["KEY_STORE_PASSWORD"]
-				keyAlias signing["KEY_STORE_ALIAS"]
-				keyPassword signing["KEY_STORE_ALIAS_PASSWORD"]
-			}
-		}
-	} else {
-		signingConfigs {
-			release
-		}
-	}
-	::end::
-	
-	buildTypes {
-		release {
-			minifyEnabled false
-			signingConfig signingConfigs.release
-			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-		}
-	}
-	
-	splits {
-		
-		// Configures multiple APKs based on ABI.
-		abi {
-			// Enables building multiple APKs per ABI.
-			enable true
-			
-			// By default all ABIs are included, so use reset() and include to specify that we only
-			// want APKs for x86 and x86_64.
-			
-			// Resets the list of ABIs that Gradle should create APKs for to none.
-			reset()
-			
-			// Specifies a list of ABIs that Gradle should create APKs for.
-			include ::ABIS::
-			
-			// Specifies that we do not want to also generate a universal APK that includes all ABIs.
-			universalApk false
-		}
-	}
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    ::if KEY_STORE::
+    signingConfigs {
+       release {
+           storeFile file("::KEY_STORE::")
+           storePassword "::KEY_STORE_PASSWORD::"
+           keyAlias "::KEY_STORE_ALIAS::"
+           keyPassword "::KEY_STORE_PASSWORD::"
+       }
+    }
+    ::end::
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            ::if KEY_STORE::
+            signingConfig signingConfigs.release
+            ::end::
+
+            ::if NME_FIREBASE_CRASHLYTICS::
+            firebaseCrashlytics {
+                // Enable processing and uploading of native symbols to Crashlytics
+                // servers. By default, this is disabled to improve build speeds.
+                // This flag must be enabled to see properly-symbolicated native
+                // stack traces in the Crashlytics dashboard.
+                nativeSymbolUploadEnabled true
+
+                strippedNativeLibsDir "::NME_STRIPPED_ROOT::"
+                unstrippedNativeLibsDir "::NME_UNSTRIPPED_ROOT::"
+            }
+            ::end::
+        }
+    }
+
+    splits {
+
+        // Configures multiple APKs based on ABI.
+        abi {
+
+            // Enables building multiple APKs per ABI.
+            enable true
+
+            // By default all ABIs are included, so use reset() and include to specify that we only
+            // want APKs for x86 and x86_64.
+
+            // Resets the list of ABIs that Gradle should create APKs for to none.
+            reset()
+
+            // Specifies a list of ABIs that Gradle should create APKs for.
+            include ::ABIS::
+
+            // Specifies that we do not want to also generate a universal APK that includes all ABIs.
+            universalApk ::UNIVERSAL_APK::
+        }
+    }
 }
 
 dependencies {
-	implementation fileTree(dir: 'libs', include: ['*.jar'])
-	::if (ANDROID_LIBRARY_PROJECTS)::::foreach (ANDROID_LIBRARY_PROJECTS)::implementation project(':deps:::name::')
-	::end::::end::
-	
-	androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-		exclude group: 'com.android.support', module: 'support-annotations'
-	})
-	api 'com.android.support:appcompat-v7:24.2.1'
-	api 'com.android.support:support-v4:24.2.1'
-	::if ANDROID_BILLING::
-	api 'com.android.billingclient:billing:1.0'
-	::end::
-	testImplementation 'junit:junit:4.12'
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    // Support is in 'androidx.core' now
+    ::if ANDROID_BILLING::
+    api 'com.android.billingclient:billing:2.1.0'
+    ::end::
+    testImplementation 'junit:junit:4.12'
+
+    ::if NME_APPLOVIN_KEY::
+    implementation 'com.applovin:applovin-sdk:+'
+    ::end::
+
+    ::if NME_FIREBASE::
+      // Add the dependency for the Performance Monitoring library
+      implementation 'com.google.firebase:firebase-analytics:17.2.2'
+
+      ::if NME_FIREBASE_PERFORMANCE::
+         implementation 'com.google.firebase:firebase-perf:19.0.7'
+      ::end::
+
+      ::if NME_FIREBASE_CRASHLYTICS::
+         implementation 'com.google.firebase:firebase-crashlytics-ndk:17.1.0'
+      ::end::
+    ::end::
+
+    dependencies {
+        ::foreach (ANDROID_LIBRARY_PROJECTS)::
+        api project(':::name::')::end::
+    }
 }
 
 
