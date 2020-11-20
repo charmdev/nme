@@ -536,14 +536,17 @@ class IOSPlatform extends Platform
          return "";
    }
 
-      override public function updateBuildDir():Void 
+   override public function updateBuildDir():Void 
    {
       super.updateBuildDir();
+      PathHelper.mkdir(targetDir);
+      PathHelper.mkdir(haxeDir);
       PathHelper.mkdir(haxeDir+"/cpp/src");
       copyTemplate("ios/UIStageView.mm", haxeDir+"/cpp/src/UIStageView.mm");
+      
+      copyTemplateDir(getHaxeTemplateDir(), haxeDir, true, false);
+      copyTemplate("ios/haxe/Build.hxml", haxeDir + "/build.hxml");
    }
-
-
 
    override public function updateOutputDir():Void 
    {
@@ -595,16 +598,6 @@ class IOSPlatform extends Platform
 
       if (project.command == "update" && PlatformHelper.hostPlatform == Platform.MAC) 
          ProcessHelper.runCommand("", "open", [ targetDir + "/" + project.app.file + ".xcodeproj" ] );
-   }
-   
-   override public function updateBuildDir()
-   {
-      PathHelper.mkdir(targetDir);
-      PathHelper.mkdir(haxeDir);
-
-      copyTemplateDir(getHaxeTemplateDir(), haxeDir, true, false);
-	  
-	  copyTemplate("ios/haxe/Build.hxml", haxeDir + "/build.hxml");
    }
 
    override public function updateLibs()

@@ -21,7 +21,9 @@ enum
    PROG_4D_INPUT      =     0x0100,
    PROG_PREM_ALPHA    =     0x0200,
 
-   PROG_COUNT =             0x0400,
+   //kukuruz
+   DRAW_SEP_ALPHA       =   0x0400,
+   PROG_COUNT 			   =   0x0800,
 };
 
 inline unsigned int getProgId( const DrawElement &element, const ColorTransform *ctrans)
@@ -36,6 +38,7 @@ inline unsigned int getProgId( const DrawElement &element, const ColorTransform 
          progId |= PROG_ALPHA_TEXTURE;
 
       if (element.mSurface->isCompressed())
+      {
          if (((CompressedSurface*) element.mSurface)->hasSepAlpha())
          {
 				progId |= DRAW_SEP_ALPHA;

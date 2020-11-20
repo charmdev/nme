@@ -347,12 +347,8 @@ GPUProg *GPUProg::create(unsigned int inID)
 		   }
          else
 		   {
-            fragColour += "texture2D(uImage0,vTexCoord)";
-		   }
-         else
-         {
             fragColour += "texture2D(uImage0,vTexCoord,-0.5)";
-         }
+		   }
       }
    }
 
