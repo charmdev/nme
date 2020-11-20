@@ -204,7 +204,6 @@ class Timer
             else
                i++;
          }
-         }
       }
    }
 
