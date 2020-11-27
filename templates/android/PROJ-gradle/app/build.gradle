@@ -116,7 +116,7 @@ dependencies {
 
     dependencies {
         ::foreach (ANDROID_LIBRARY_PROJECTS)::
-        api project(':::name::')::end::
+        api project(':deps:::name::')::end::
     }
 }
 
