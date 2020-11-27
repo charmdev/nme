@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.opengl.GLSurfaceView;
 
 
 public class Extension {
@@ -171,6 +172,11 @@ public class Extension {
 		
 		
 	}
-	
-	
+
+	public static void sendHaxe(java.lang.Runnable runnable) {
+		GLSurfaceView view = (GLSurfaceView) mainView;
+		if (view == null) return;
+
+		view.queueEvent(runnable);
+   	}
 }
