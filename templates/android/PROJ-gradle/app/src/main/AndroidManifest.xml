@@ -26,7 +26,7 @@
         android:name="MainActivity"
         android:label="::APP_TITLE::"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize"::if (WIN_ORIENTATION!=""):: android:screenOrientation="::WIN_ORIENTATION::"::end::
-      ::foreach appActivity:: ::__current__:: ::end::
+        ::foreach appActivity:: ::__current__:: ::end::
        >
          
          <intent-filter>
