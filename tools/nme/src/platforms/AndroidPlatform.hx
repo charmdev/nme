@@ -52,14 +52,14 @@ class AndroidPlatform extends Platform
             args: ["-D", "HXCPP_X86"],
             libArchSuffix: "-x86",
             versionCodeScaler: 4
-         }/*,
+         },
          {
              name: "x86_64",
              architecture: Architecture.X86_64,
              args: ["-D", "HXCPP_X86_64"],
              libArchSuffix: "-x86_64",
              versionCodeScaler: 5
-         }*/
+         }
       ];
 
       if (project.hasDef("androidBilling"))
@@ -91,7 +91,8 @@ class AndroidPlatform extends Platform
          project.androidConfig.ABIs = ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"];
       }
 
-      project.architectures = [for(abi in project.androidConfig.ABIs) findArchitectureByName(abi)];
+      if (project.architectures.length == 0)
+         project.architectures = [for(abi in project.androidConfig.ABIs) findArchitectureByName(abi)];
       
       Log.verbose("Valid archs: " + project.architectures );
       
