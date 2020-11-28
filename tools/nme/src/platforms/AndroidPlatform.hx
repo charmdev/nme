@@ -197,14 +197,14 @@ class AndroidPlatform extends Platform
 
    function getUnstrippedRoot()
    {
-      var outDir = FileSystem.fullPath(getOutputDir());
+      var outDir = FileSystem.absolutePath(getOutputDir());
       outDir = outDir.split("\\").join("/");
       return outDir+"/unstripped";
    }
 
    function getStrippedRoot()
    {
-      var libDir = FileSystem.fullPath(getOutputLibDir());
+      var libDir = FileSystem.absolutePath(getOutputLibDir());
       libDir = libDir.split("\\").join("/");
       return libDir;
    }
@@ -509,7 +509,7 @@ class AndroidPlatform extends Platform
       if (gradle)
       {
          var build = (project.certificate != null) ? "release" : "debug";
-         targetPath = '${FileSystem.fullPath(outputDir)}/app/build/outputs/apk/${build}/app-${queryDeviceABI()}-${build}.apk';
+         targetPath = '${FileSystem.absolutePath(outputDir)}/app/build/outputs/apk/${build}/app-${queryDeviceABI()}-${build}.apk';
       }
       else
       {
@@ -517,7 +517,7 @@ class AndroidPlatform extends Platform
          if (project.certificate != null) 
             build = "release";
 
-         targetPath = FileSystem.fullPath(outputDir) + "/bin/" + project.app.file + "-" + build + ".apk";
+         targetPath = FileSystem.absolutePath(outputDir) + "/bin/" + project.app.file + "-" + build + ".apk";
       }
 
 
