@@ -55,13 +55,15 @@ class IOSPlatform extends Platform
       if (config.sourceFlavour=="mm")
          project.haxeflags.push("-D objc");
 
-      // If we support iphones with deployment < 5, we must support armv6 ...
-      if ( (config.deviceConfig & IOSConfig.IPHONE) > 0 && deployment<5)
-          ArrayHelper.addUnique(architectures, Architecture.ARMV6);
-      else
-      {
-          ArrayHelper.addUnique(architectures, Architecture.ARMV7);
-          ArrayHelper.addUnique(architectures, Architecture.ARM64);
+      if (architectures.length == 0) {
+         // If we support iphones with deployment < 5, we must support armv6 ...
+         if ( (config.deviceConfig & IOSConfig.IPHONE) > 0 && deployment<5)
+            ArrayHelper.addUnique(architectures, Architecture.ARMV6);
+         else
+         {
+            ArrayHelper.addUnique(architectures, Architecture.ARMV7);
+            ArrayHelper.addUnique(architectures, Architecture.ARM64);
+         }
       }
 
       ArrayHelper.addUnique(architectures, Architecture.X86_64);
