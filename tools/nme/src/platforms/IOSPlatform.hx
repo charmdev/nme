@@ -343,28 +343,7 @@ class IOSPlatform extends Platform
            }
            else
            {
-              var frameworkID = "11C0000000000018" + StringHelper.getUniqueID();
-              var fileID = "11C0000000000018" + StringHelper.getUniqueID();
-              var path:String = 'System/Library/Frameworks';
-              if(dependency.path != '')
-              {
-                  path = dependency.path;
-                  if (path=="PROJ")
-                     path = project.app.file;
-                  else
-                     project.frameworkSearchPaths.push(path);
-              }
-              var sourceTree:String = "SDKROOT";
-               if(dependency.sourceTree != '') {
-                   sourceTree = dependency.sourceTree;
-                   if(sourceTree == 'group') {
-                       sourceTree = "\"<group>\"";
-                   }
-               }
-              context.ADDL_PBX_BUILD_FILE += '      $frameworkID /* $lib in Frameworks */ = {isa = PBXBuildFile; fileRef = $fileID /* $lib */; };\n';
-              context.ADDL_PBX_FILE_REFERENCE += '     $fileID /* $lib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = $lib; path = "$path/$lib"; sourceTree = $sourceTree; };\n';
-              context.ADDL_PBX_FRAMEWORKS_BUILD_PHASE += '            $frameworkID /* $lib in Frameworks */,\n';
-              context.ADDL_PBX_FRAMEWORK_GROUP += '            $fileID /* $lib */,\n';
+               configureDependencyCharmdev(dependency);
            }
         }
 
@@ -372,6 +351,62 @@ class IOSPlatform extends Platform
       context.FRAMEWORK_IMPORTS = imports.join("\n");
       //updateIcon();
       //updateLaunchImage();
+   }
+
+   private function configureDependency(dependency) {
+      var lib = dependency.getFramework();
+      var frameworkID = "11C0000000000018" + StringHelper.getUniqueID();
+      var fileID = "11C0000000000018" + StringHelper.getUniqueID();
+      var path:String = 'System/Library/Frameworks';
+      if(dependency.path != '')
+      {
+         path = dependency.path;
+         if (path=="PROJ")
+            path = project.app.file;
+         else
+            project.frameworkSearchPaths.push(path);
+      }
+      var sourceTree:String = "SDKROOT";
+      if(dependency.sourceTree != '') {
+            sourceTree = dependency.sourceTree;
+            if(sourceTree == 'group') {
+               sourceTree = "\"<group>\"";
+            }
+      }
+      context.ADDL_PBX_BUILD_FILE += '      $frameworkID /* $lib in Frameworks */ = {isa = PBXBuildFile; fileRef = $fileID /* $lib */; };\n';
+      context.ADDL_PBX_FILE_REFERENCE += '     $fileID /* $lib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = $lib; path = "$path/$lib"; sourceTree = $sourceTree; };\n';
+      context.ADDL_PBX_FRAMEWORKS_BUILD_PHASE += '            $frameworkID /* $lib in Frameworks */,\n';
+      context.ADDL_PBX_FRAMEWORK_GROUP += '            $fileID /* $lib */,\n';
+   }
+
+   private function configureDependencyCharmdev(dependency) {
+      var lib = dependency.getFramework();
+      var frameworkID = "11C0000000000018" + StringHelper.getUniqueID();
+      var fileID = "11C0000000000018" + StringHelper.getUniqueID();
+
+      var name = Path.withoutDirectory(lib);
+      var frameworkFullPath:String = PathHelper.tryFullPath(dependency.getFullPath());
+      if(dependency.path != '')
+      {
+          if (dependency.path=="PROJ") {
+          }
+          else {
+             if (project.frameworkSearchPaths.indexOf(Path.directory(frameworkFullPath)) < 0)
+                project.frameworkSearchPaths.push(Path.directory(frameworkFullPath));
+          }
+      }
+      var sourceTree:String = "SDKROOT";
+       if(dependency.sourceTree != '') {
+           sourceTree = dependency.sourceTree;
+           if(sourceTree == 'group') {
+               sourceTree = "\"<group>\"";
+           }
+       }
+      
+      context.ADDL_PBX_BUILD_FILE += '      $frameworkID /* $name in Frameworks */ = {isa = PBXBuildFile; fileRef = $fileID /* $name */; };\n';
+      context.ADDL_PBX_FILE_REFERENCE += '     $fileID /* $name */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = $name; path = "$name"; sourceTree = $sourceTree; };\n';
+      context.ADDL_PBX_FRAMEWORKS_BUILD_PHASE += '            $frameworkID /* $name in Frameworks */,\n';
+      context.ADDL_PBX_FRAMEWORK_GROUP += '            $fileID /* $name */,\n';
    }
    
 	private function findPathIn(fileName:String, paths:Array<String>):String
@@ -543,6 +578,7 @@ class IOSPlatform extends Platform
       PathHelper.mkdir(haxeDir);
       PathHelper.mkdir(haxeDir+"/cpp/src");
       copyTemplate("ios/UIStageView.mm", haxeDir+"/cpp/src/UIStageView.mm");
+      copyTemplate("ios/CharmUtils.mm", haxeDir+"/cpp/src/CharmUtils.mm");
       
       copyTemplateDir(getHaxeTemplateDir(), haxeDir, true, false);
       copyTemplate("ios/haxe/Build.hxml", haxeDir + "/build.hxml");
