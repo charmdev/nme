@@ -48,6 +48,22 @@ namespace nme { int gFixedOrientation = -1; }
    #define APP_LOG(x) { }
 #endif
 
+static const int iPhoneXScreenWidth = 2436;
+static const int iPhone11ScreenWidth = 1792;
+static const int iPhone11ProScreenWidth = 2688;
+
+bool hasNotch(int screenWidth)
+{
+   return (screenWidth == iPhoneXScreenWidth || 
+         screenWidth == iPhone11ScreenWidth ||
+         screenWidth == iPhone11ProScreenWidth);
+}
+
+int notchHeight(int screenWidth)
+{
+   return hasNotch(screenWidth) ? 30 : 0;
+}
+
 
 #ifndef IPHONESIM
 CMMotionManager *sgCmManager = 0;
@@ -2132,8 +2148,30 @@ bool nmeIsMain = true;
          sOnFrame( new IOSViewFrame(nmeStage) );
       }
    }
+
+   if ([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone) {
+         nmeStage->SetNotchHeight(notchHeight(nmeStage->Width()));
+      }
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+   APP_LOG(@"viewWillAppear");
+   CGRect bounds = self.view.bounds;
+   if (!isFirstAppearance)
+   {
+      isFirstAppearance = true;
+      if (!nmeIsMain)
+      {
+         int top = 0;
+         gc_set_top_of_stack(&top,false);
+         sOnFrame( new IOSViewFrame(nmeStage) );
+      }
+      if ([[UIDevice currentDevice]userInterfaceIdiom]==UIUserInterfaceIdiomPhone) {
+         nmeStage->SetNotchHeight(notchHeight(nmeStage->Width()));
+      }
+   }
+}
 
 - (void)didReceiveMemoryWarning
 {
