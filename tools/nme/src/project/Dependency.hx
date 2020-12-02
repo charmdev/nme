@@ -18,7 +18,12 @@ class Dependency
 
    public function getAndroidProject()
    {
-      return baseDir +"/" + path;
+      return getFullPath();
+   }
+
+   public function getFullPath() 
+   {
+      return baseDir +"/" + path;   
    }
 
    public function isAndroidProject()
