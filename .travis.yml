@@ -4,15 +4,33 @@ env:
   global:
   - HXCPP_COMPILE_CACHE=~/hxcache
 
+os: osx
+
+osx_image: xcode12
+
 cache:
   directories:
   - $HXCPP_COMPILE_CACHE
 
 before_install:
-- travis_retry brew install neko --HEAD
-- wget -c https://github.com/HaxeFoundation/haxe/releases/download/3.4.2/haxe-3.4.2-osx.tar.gz
+- wget -c https://github.com/HaxeFoundation/neko/releases/download/v2-3-0/neko-2.3.0-osx64.tar.gz
+- sudo mkdir /usr/local/lib/neko
 - sudo mkdir /usr/local/lib/haxe
-- sudo tar xvzf haxe-3.4.2-osx.tar.gz -C /usr/local/lib/haxe --strip-components=1
+- sudo tar xvzf neko-2.3.0-osx64.tar.gz -C /usr/local/lib/neko
+- sudo cp /usr/local/lib/neko/neko-2.3.0-osx64/*.ndll /usr/local/lib/haxe
+- sudo cp /usr/local/lib/neko/neko-2.3.0-osx64/neko /usr/local/lib/haxe
+- sudo ln -s /usr/local/lib/neko/neko-2.3.0-osx64/libneko.2.3.0.dylib /usr/local/lib/libneko.2.dylib
+- sudo ln -s /usr/local/lib/neko/neko-2.3.0-osx64/libneko.2.3.0.dylib /usr/local/lib/libneko.dylib
+- sudo ln -s /usr/local/lib/neko/neko-2.3.0-osx64/neko /usr/local/bin/neko
+- sudo cp /usr/local/lib/neko/neko-2.3.0-osx64/*.ndll /usr/local/bin
+- sudo ln -s /usr/local/lib/neko/libneko.2.dylib /usr/local/lib/neko/libneko.2.dylib
+- sudo ln -s /usr/local/lib/neko/libneko.dylib /usr/local/lib/neko/libneko.dylib
+- sudo ln -s /usr/local/lib/neko/libneko.2.dylib /usr/local/bin/libneko.2.dylib
+- sudo ln -s /usr/local/lib/neko/libneko.dylib /usr/local/bin/libneko.dylib
+- wget -c https://github.com/HaxeFoundation/haxe/releases/download/4.1.4/haxe-4.1.4-osx.tar.gz
+- sudo tar xvzf haxe-4.1.4-osx.tar.gz -C /usr/local/lib/haxe --strip-components=1
+- sudo ln -s /usr/local/lib/neko/libneko.dylib /usr/local/lib/haxe/libneko.dylib
+- sudo ln -s /usr/local/lib/neko/libneko.2.dylib /usr/local/lib/haxe/libneko.2.dylib
 - sudo ln -s /usr/local/lib/haxe/haxe /usr/local/bin/haxe
 - sudo ln -s /usr/local/lib/haxe/haxelib /usr/local/bin/haxelib
 - mkdir ~/haxelib
@@ -32,7 +50,7 @@ script:
 - cd $TRAVIS_BUILD_DIR/tools/nme
 - haxe compile.hxml
 - cd $TRAVIS_BUILD_DIR/project
-- neko build.n
+- neko build.n mac-m64
 - cd $TRAVIS_BUILD_DIR/tools/nme
 - haxelib run nme setup
 - haxe test.hxml
