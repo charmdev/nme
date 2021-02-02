@@ -128,7 +128,7 @@ class NMEStage;
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void) makeCurrent:(bool)withMultisampling;
 
-- (void) createOGLFramebuffer;
+- (bool) createOGLFramebuffer;
 - (void) destroyOGLFramebuffer;
 - (void) recreateFB;
 @end
@@ -723,7 +723,7 @@ static std::string nmeTitle;
 }
 
 
-- (void) createOGLFramebuffer
+- (bool) createOGLFramebuffer
 {
    APP_LOG(@"createOGLFramebuffer");
    // Create default framebuffer object.
@@ -802,7 +802,8 @@ static std::string nmeTitle;
       {
          NSLog(@"Failed to make complete framebuffer object %x",
          glCheckFramebufferStatus(GL_FRAMEBUFFER));
-         throw "OpenGL resize failed";
+         //throw "OpenGL resize failed";
+		 return false;
       }
    }
    else
@@ -870,9 +871,12 @@ static std::string nmeTitle;
       {
          NSLog(@"Failed to make complete framebuffer object %x",
          glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
-         throw "OpenGL resize failed";
+         //throw "OpenGL resize failed";
+         return false;
       }
    }
+   
+   return true;
 }
 
 - (void) destroyOGLFramebuffer
@@ -1070,14 +1074,15 @@ static std::string nmeTitle;
 {
    [EAGLContext setCurrentContext:mOGLContext];
    [self destroyOGLFramebuffer];
-   [self createOGLFramebuffer];
+   bool success = [self createOGLFramebuffer];
    //printf("Resize, set ogl %p : %dx%d\n", mOGLContext, backingWidth, backingHeight);
-
-   mHardwareRenderer->SetWindowSize(backingWidth,backingHeight);
-
-   mStage->OnOGLResize(backingWidth,backingHeight);
-
-   mStage->needRecreateFB = false;
+   
+   if (success)
+   {
+      mHardwareRenderer->SetWindowSize(backingWidth, backingHeight);
+	  mStage->OnOGLResize(backingWidth, backingHeight);
+	  mStage->needRecreateFB = false;
+   }
 }
 
 - (void) layoutSubviews
@@ -2299,7 +2304,7 @@ void CreateMainFrame(FrameCreationCallback inCallback,
       #ifndef OBJC_ARC
       NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
       #endif
-      UIApplicationMain(argc, argv, nil, @"NMEAppDelegate");
+	      UIApplicationMain(argc, argv, nil, @"NMEAppDelegate");
       #ifndef OBJC_ARC
       [pool release];
       #endif
