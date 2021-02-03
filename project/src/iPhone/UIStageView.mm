@@ -128,7 +128,7 @@ class NMEStage;
 - (void) touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event;
 - (void) makeCurrent:(bool)withMultisampling;
 
-- (bool) createOGLFramebuffer;
+- (void) createOGLFramebuffer;
 - (void) destroyOGLFramebuffer;
 - (void) recreateFB;
 @end
@@ -723,7 +723,7 @@ static std::string nmeTitle;
 }
 
 
-- (bool) createOGLFramebuffer
+- (void) createOGLFramebuffer
 {
    APP_LOG(@"createOGLFramebuffer");
    // Create default framebuffer object.
@@ -802,8 +802,7 @@ static std::string nmeTitle;
       {
          NSLog(@"Failed to make complete framebuffer object %x",
          glCheckFramebufferStatus(GL_FRAMEBUFFER));
-         //throw "OpenGL resize failed";
-		 return false;
+         throw "OpenGL resize failed";
       }
    }
    else
@@ -871,12 +870,9 @@ static std::string nmeTitle;
       {
          NSLog(@"Failed to make complete framebuffer object %x",
          glCheckFramebufferStatusOES(GL_FRAMEBUFFER_OES));
-         //throw "OpenGL resize failed";
-         return false;
+         throw "OpenGL resize failed";
       }
    }
-   
-   return true;
 }
 
 - (void) destroyOGLFramebuffer
@@ -1074,15 +1070,12 @@ static std::string nmeTitle;
 {
    [EAGLContext setCurrentContext:mOGLContext];
    [self destroyOGLFramebuffer];
-   bool success = [self createOGLFramebuffer];
+   [self createOGLFramebuffer];
    //printf("Resize, set ogl %p : %dx%d\n", mOGLContext, backingWidth, backingHeight);
    
-   if (success)
-   {
-      mHardwareRenderer->SetWindowSize(backingWidth, backingHeight);
-	  mStage->OnOGLResize(backingWidth, backingHeight);
-	  mStage->needRecreateFB = false;
-   }
+   mHardwareRenderer->SetWindowSize(backingWidth, backingHeight);
+   mStage->OnOGLResize(backingWidth, backingHeight);
+   mStage->needRecreateFB = false;
 }
 
 - (void) layoutSubviews
