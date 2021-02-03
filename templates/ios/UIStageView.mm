@@ -147,6 +147,7 @@ class NMEStage;
 #ifndef NME_METAL
 - (void) createOGLFramebuffer;
 - (void) destroyOGLFramebuffer;
+- (void) recreateFB;
 #endif
 @end
 
@@ -192,6 +193,7 @@ public:
    bool           multiTouchEnabled;
    bool           haveOpaqueBg;
    bool           wantOpaqueBg;
+   bool           needRecreateFB;
 
    NMEStage(CGRect inRect);
    ~NMEStage();
@@ -306,7 +308,14 @@ static NSString *sgDisplayLinkMode = NSRunLoopCommonModes;
    {
       #ifndef NME_METAL
       if (stage->nmeView->mOGLContext && [EAGLContext currentContext] != stage->nmeView->mOGLContext)
-         [EAGLContext setCurrentContext:stage->nmeView->mOGLContext];  
+      {
+		  [EAGLContext setCurrentContext:stage->nmeView->mOGLContext];
+      }
+
+      if (stage->needRecreateFB)
+      {
+		  [stage->nmeView recreateFB];
+      }
       #endif
       Event evt(etPoll);
       stage->OnEvent(evt);
@@ -775,6 +784,18 @@ static std::string nmeTitle;
 
 
 #ifndef NME_METAL
+- (void) recreateFB
+{
+   [EAGLContext setCurrentContext:mOGLContext];
+   [self destroyOGLFramebuffer];
+   [self createOGLFramebuffer];
+   //printf("Resize, set ogl %p : %dx%d\n", mOGLContext, backingWidth, backingHeight);
+   
+   mHardwareRenderer->SetWindowSize(backingWidth, backingHeight);
+   mStage->OnOGLResize(backingWidth, backingHeight);
+   mStage->needRecreateFB = false;
+}
+
 - (void) createOGLFramebuffer
 {
    APP_LOG(@"createOGLFramebuffer");
@@ -1130,14 +1151,7 @@ static std::string nmeTitle;
 - (void) layoutSubviews
 {
    #ifndef NME_METAL
-   [EAGLContext setCurrentContext:mOGLContext];
-   [self destroyOGLFramebuffer];
-   [self createOGLFramebuffer];
-   //printf("Resize, set ogl %p : %dx%d\n", mOGLContext, backingWidth, backingHeight);
-
-
-   mHardwareRenderer->SetWindowSize(backingWidth,backingHeight);
-   mStage->OnOGLResize(backingWidth,backingHeight);
+   mStage->needRecreateFB = true;
    #else
    backingSize = [self drawableSize];
 
@@ -1773,6 +1787,7 @@ NMEStage::NMEStage(CGRect inRect) : nme::Stage(true)
 
    haveOpaqueBg = true;
    wantOpaqueBg = true;
+   needRecreateFB = false;
 
    NSString* platform = [UIDeviceHardware platformString];
    //printf("Detected hardware: %s\n", [platform UTF8String]);
