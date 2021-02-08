@@ -6,6 +6,7 @@ import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.IOException; 
 import java.lang.System;
+import java.lang.Exception;
 import java.security.MessageDigest;
 // import java.util.Hashtable;
 import java.util.HashMap;
@@ -377,7 +378,10 @@ public class Sound implements SoundPool.OnLoadCompleteListener
 		        } catch(IOException e) { 
 		            System.out.println(e.getMessage());
 		            return null;
-		        }
+		        } catch(java.lang.Exception e) { 
+		            System.out.println(e.getMessage());
+		            return null;
+		        } 
 		    } else {
 				Uri uri = Uri.parse(inPath);
            Log.v("Sound", "looks like uri " + uri);
