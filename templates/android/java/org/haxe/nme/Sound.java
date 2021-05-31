@@ -177,7 +177,7 @@ public class Sound implements SoundPool.OnLoadCompleteListener
 
    public void onLoadComplete(SoundPool soundPool,int sampleId,int status)
    {
-      Log.v("Sound","onLoadComplete " + sampleId + "=" + status);
+      //Log.v("Sound","onLoadComplete " + sampleId + "=" + status);
       mSoundIdLoaded.put(sampleId,true);
    }
 	
@@ -214,7 +214,7 @@ public class Sound implements SoundPool.OnLoadCompleteListener
 	public static int getSoundHandle(String inFilename)
 	{
 		int resourceId = GameActivity.getResourceID(inFilename);
-		Log.v("Sound","Get sound handle " + inFilename + " = " + resourceId);
+		//Log.v("Sound","Get sound handle " + inFilename + " = " + resourceId);
 
 		if (resourceId > 0)
       {
@@ -229,7 +229,7 @@ public class Sound implements SoundPool.OnLoadCompleteListener
          mResourceToSoundId.put(resourceId, soundId);
          mSoundIdLoaded.put(soundId,false);
 		   int duration = getDuration(resourceId);
-			Log.v("Sound", "Loaded resource " + resourceId + " to " + soundId + " duration = " + mSoundDuration);
+			//Log.v("Sound", "Loaded resource " + resourceId + " to " + soundId + " duration = " + mSoundDuration);
 		   mSoundDuration.put(soundId, (long)duration);
          return soundId;
 		}
@@ -242,7 +242,7 @@ public class Sound implements SoundPool.OnLoadCompleteListener
             return soundId;
          }
 
-			Log.v("Sound", "Resource not found, assume filesystem: " + inFilename);
+			//Log.v("Sound", "Resource not found, assume filesystem: " + inFilename);
 			int soundId = mSoundPool.load(inFilename, 1);
          mFilenameToSoundId.put(inFilename, soundId);
          // Not complete yet
@@ -250,7 +250,7 @@ public class Sound implements SoundPool.OnLoadCompleteListener
 
 		   int duration = getDuration(inFilename);
 		   mSoundDuration.put(soundId, (long)duration);
-			Log.v("Sound", "Loaded sound from " + inFilename + " to " + soundId + " duration =" + duration);
+			//Log.v("Sound", "Loaded sound from " + inFilename + " to " + soundId + " duration =" + duration);
 
          return soundId;
 		}
@@ -270,13 +270,13 @@ public class Sound implements SoundPool.OnLoadCompleteListener
 
 		//File file = File.createTempFile("temp", ".sound", mContext.getFilesDir());
 		if (!file.exists()) {
-			Log.v("Sound", "Created temp sound file :" + file.getAbsolutePath());
+			//Log.v("Sound", "Created temp sound file :" + file.getAbsolutePath());
 			java.io.FileOutputStream fileOutputStream = new java.io.FileOutputStream(file);
 			fileOutputStream.write(data);
 			fileOutputStream.flush();
 			fileOutputStream.close();
 		} else {
-			Log.v("Sound", "Opened temp sound file :" + file.getAbsolutePath());
+			//Log.v("Sound", "Opened temp sound file :" + file.getAbsolutePath());
 		}
 		
 		return file.getAbsolutePath();
@@ -284,7 +284,7 @@ public class Sound implements SoundPool.OnLoadCompleteListener
 	
 	public static int playSound(int inSoundId, double inVolLeft, double inVolRight, int inLoop)
 	{
-		Log.v("Sound", "PlaySound " + inSoundId);
+		//Log.v("Sound", "PlaySound " + inSoundId);
 		
 		inLoop--;
 		if (inLoop < 0) {
@@ -294,7 +294,7 @@ public class Sound implements SoundPool.OnLoadCompleteListener
       int tries = 0;
       while( !mSoundIdLoaded.get(inSoundId) )
       {
-		   Log.v("Sound", "wait loaded...");
+		   //Log.v("Sound", "wait loaded...");
          try { java.lang.Thread.sleep(5); } catch (InterruptedException e) { break; }
          tries++;
          if (tries>50)
@@ -377,7 +377,10 @@ public class Sound implements SoundPool.OnLoadCompleteListener
 		        } catch(IOException e) { 
 		            System.out.println(e.getMessage());
 		            return null;
-		        }
+		        } catch(java.lang.Exception e) { 
+		            System.out.println(e.getMessage());
+		            return null;
+		        } 
 		    } else {
 				Uri uri = Uri.parse(inPath);
            Log.v("Sound", "looks like uri " + uri);
