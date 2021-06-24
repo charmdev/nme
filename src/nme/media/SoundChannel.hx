@@ -27,7 +27,7 @@ class SoundChannel extends EventDispatcher
    /** @private */ public var nmeDataProvider:EventDispatcher;
 
 
-   public function new(inSoundHandle:NativeHandle, startTime:Float, loops:Int, sndTransform:SoundTransform) 
+   public function new(inSoundHandle:NativeHandle, startTime:Float, loops:Int, sndTransform:SoundTransform, priority:Int = 1) 
    {
       super();
 
@@ -39,7 +39,7 @@ class SoundChannel extends EventDispatcher
       }
 
        if (inSoundHandle != null)
-         nmeHandle = nme_sound_channel_create(inSoundHandle, startTime, loops, nmeTransform);
+         nmeHandle = nme_sound_channel_create(inSoundHandle, startTime, loops, nmeTransform, priority);
 
       if (nmeHandle != null)
       {
@@ -189,7 +189,7 @@ class SoundChannel extends EventDispatcher
    private static var nme_sound_channel_set_position = PrimeLoader.load("nme_sound_channel_set_position", "odv");
    private static var nme_sound_channel_get_data_position = PrimeLoader.load("nme_sound_channel_get_data_position", "od");
    private static var nme_sound_channel_stop = PrimeLoader.load("nme_sound_channel_stop", "ov");
-   private static var nme_sound_channel_create = PrimeLoader.load("nme_sound_channel_create", "odioo");
+   private static var nme_sound_channel_create = PrimeLoader.load("nme_sound_channel_create", "odioio");
    private static var nme_sound_channel_set_transform = PrimeLoader.load("nme_sound_channel_set_transform", "oov");
    private static var nme_sound_channel_needs_data = PrimeLoader.load("nme_sound_channel_needs_data", "ob");
    private static var nme_sound_channel_add_data = PrimeLoader.load("nme_sound_channel_add_data", "oov");

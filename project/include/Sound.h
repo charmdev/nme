@@ -96,7 +96,7 @@ public:
    virtual std::string getError() = 0;
    virtual double getLength() = 0;
    virtual void close()  { }
-   virtual SoundChannel *openChannel(double startTime, int loops, const SoundTransform &inTransform) = 0;
+   virtual SoundChannel *openChannel(double startTime, int loops, const SoundTransform &inTransform, int priority) = 0;
    virtual const char *getEngine() { return "unknown"; }
    NmeObjectType getObjectType() { return notSound; }
 

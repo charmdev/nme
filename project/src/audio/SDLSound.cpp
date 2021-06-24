@@ -821,7 +821,7 @@ public:
    }
 
    // Will return with one ref...
-   SoundChannel *openChannel(double startTime, int loops, const SoundTransform &inTransform)
+   SoundChannel *openChannel(double startTime, int loops, const SoundTransform &inTransform, int priority)
    {
       if (!loaded)
          loadChunk();
@@ -1082,7 +1082,7 @@ public:
       return duration;
    }
    // Will return with one ref...
-   SoundChannel *openChannel(double startTime, int loops, const SoundTransform &inTransform)
+   SoundChannel *openChannel(double startTime, int loops, const SoundTransform &inTransform, int priority)
    {
       if (!loaded)
          loadMusic();

@@ -47,7 +47,7 @@ void initJni()
       LOGV("initJni...");
       jGetDuration = env->GetStaticMethodID(soundClass, "getDuration", "(Ljava/lang/String;)I");
       CheckException(env,false);
-      jPlaySound = env->GetStaticMethodID(soundClass, "playSound", "(IDDI)I");
+      jPlaySound = env->GetStaticMethodID(soundClass, "playSound", "(IDDII)I");
       CheckException(env,false);
       jGetSoundComplete = env->GetStaticMethodID(soundClass, "getSoundComplete", "(III)Z");
       CheckException(env,false);
@@ -83,9 +83,9 @@ void initJni()
 class AndroidSoundChannel : public SoundChannel
 {
 public:
-   AndroidSoundChannel(Object *inSound, int inSoundId, double startTime, int loops, const SoundTransform &inTransform)
+   AndroidSoundChannel(Object *inSound, int inSoundId, double startTime, int loops, const SoundTransform &inTransform, int inPriority)
    {
-      LOGV("Android Sound Channel create, in handle, %d",inSoundId);
+      //LOGV("Android Sound Channel create, in handle, %d",inSoundId);
       JNIEnv *env = GetEnv();
       mStreamID = -1;
       mSound = inSound;
@@ -94,7 +94,7 @@ public:
       inSound->IncRef();
       if (inSoundId >= 0)
       {
-         mStreamID = env->CallStaticIntMethod(soundClass, jPlaySound, inSoundId, inTransform.volume*((1-inTransform.pan)/2), inTransform.volume*((inTransform.pan+1)/2), mLoop );
+         mStreamID = env->CallStaticIntMethod(soundClass, jPlaySound, inSoundId, inTransform.volume*((1-inTransform.pan)/2), inTransform.volume*((inTransform.pan+1)/2), mLoop, inPriority );
       }
       CheckException(env,false);
     }
@@ -160,7 +160,7 @@ class AndroidMusicChannel : public SoundChannel
 public:
    AndroidMusicChannel(Object *inSound, const std::string &inPath, double startTime, int loops, const SoundTransform &inTransform)
    {
-      LOGV("Android Music Channel create %d", inPath.c_str());
+      //LOGV("Android Music Channel create %d", inPath.c_str());
       JNIEnv *env = GetEnv();
       mState = 0;
       mSound = inSound;
@@ -324,13 +324,13 @@ public:
    
     void close()  { }
 
-   SoundChannel *openChannel(double startTime, int loops, const SoundTransform &inTransform)
+   SoundChannel *openChannel(double startTime, int loops, const SoundTransform &inTransform, int priority)
    {
-      LOGV("AndroidSound openChannel %d...",mMode);
+      //LOGV("AndroidSound openChannel %d...",mMode);
       switch (mMode)
       {
          case MODE_SOUND_ID:
-            return new AndroidSoundChannel(this, soundPoolId, startTime, loops, inTransform);
+            return new AndroidSoundChannel(this, soundPoolId, startTime, loops, inTransform, priority);
             break;
          case MODE_MUSIC_PATH:
          default:

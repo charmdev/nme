@@ -918,7 +918,7 @@ public:
    }
    
    
-   SoundChannel *openChannel(double startTime, int loops, const SoundTransform &inTransform)
+   SoundChannel *openChannel(double startTime, int loops, const SoundTransform &inTransform, int priority)
    {
       if (mBufferID)
       {

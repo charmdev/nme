@@ -189,7 +189,7 @@ class Sound extends EventDispatcher
       close();
    }
 
-   public function play(startTime:Float = 0, loops:Int = 0, ?sndTransform:SoundTransform):SoundChannel 
+   public function play(startTime:Float = 0, loops:Int = 0, ?sndTransform:SoundTransform, priority:Int = 1):SoundChannel 
    {
       nmeCheckLoading();
 
@@ -221,7 +221,7 @@ class Sound extends EventDispatcher
          if (nmeHandle == null || nmeLoading)
             return null;
 
-         var result = new SoundChannel(nmeHandle, startTime, loops, sndTransform);
+         var result = new SoundChannel(nmeHandle, startTime, loops, sndTransform, priority);
          if (result.nmeHandle==null)
             return null;
          return result;

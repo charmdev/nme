@@ -5213,15 +5213,16 @@ void nme_sound_channel_set_transform(value inChannel, value inTransform)
 DEFINE_PRIME2v(nme_sound_channel_set_transform);
 
 
-value nme_sound_channel_create(value inSound, double inStart, int inLoops, value inTransform)
+value nme_sound_channel_create(value inSound, double inStart, int inLoops, value inTransform, int inPriority)
 {
    Sound *sound;
    if (AbstractToObject(inSound,sound))
    {
       SoundTransform trans;
       FromValue(trans,inTransform);
-      SoundChannel *channel = sound->openChannel(inStart,inLoops,trans);
-      if (channel)
+	  
+	  SoundChannel *channel = sound->openChannel(inStart,inLoops,trans,inPriority);
+	  if (channel)
       {
          value result = ObjectToAbstract(channel);
          return result;
@@ -5229,7 +5230,7 @@ value nme_sound_channel_create(value inSound, double inStart, int inLoops, value
    }
    return alloc_null();
 }
-DEFINE_PRIME4(nme_sound_channel_create);
+DEFINE_PRIME5(nme_sound_channel_create);
 
 
 // --- dynamic sound ---

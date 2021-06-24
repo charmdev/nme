@@ -435,7 +435,7 @@ public:
     const char *getEngine() { return "avplayer"; }
 
     // This method is called when Sound.play is called.
-    SoundChannel *openChannel(double startTime, int loops, const SoundTransform &inTransform)
+    SoundChannel *openChannel(double startTime, int loops, const SoundTransform &inTransform, int priority)
     {
         LOG_SOUND("AVAudioPlayerSound openChannel() startTime=%f, loops = %d",startTime,loops); 
         //return new AVAudioPlayerChannel(this,mBufferID,loops,inTransform);
