@@ -792,7 +792,7 @@ implements SensorEventListener
       }
       catch (java.io.IOException e)
       {
-         Log.e(TAG,  "getResource" + ":" + e.toString());
+         //Log.e(TAG,  "getResource" + ":" + e.toString());
       }
       
       return null;
