@@ -383,7 +383,7 @@ public class Sound implements SoundPool.OnLoadCompleteListener
 		            System.out.println(e.getMessage());
 		            return null;
 		        } catch(java.lang.Exception e) { 
-		            System.out.println(e.getMessage());
+		            System.out.println("Something awfull happened to sound");
 		            return null;
 		        } 
 		    } else {
