@@ -404,8 +404,11 @@ class IOSPlatform extends Platform
                sourceTree = "\"<group>\"";
            }
        }
-      
-      context.ADDL_PBX_BUILD_FILE += '      $frameworkID /* $name in Frameworks */ = {isa = PBXBuildFile; fileRef = $fileID /* $name */; };\n';
+
+      var ignoreDependency = ["YandexMobileAds.framework"];
+      if (ignoreDependency.indexOf(name) == -1)
+         context.ADDL_PBX_BUILD_FILE += '      $frameworkID /* $name in Frameworks */ = {isa = PBXBuildFile; fileRef = $fileID /* $name */; };\n';
+
       context.ADDL_PBX_FILE_REFERENCE += '     $fileID /* $name */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = $name; path = "$name"; sourceTree = $sourceTree; };\n';
       context.ADDL_PBX_FRAMEWORKS_BUILD_PHASE += '            $frameworkID /* $name in Frameworks */,\n';
       context.ADDL_PBX_FRAMEWORK_GROUP += '            $fileID /* $name */,\n';
