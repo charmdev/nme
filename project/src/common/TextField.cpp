@@ -2666,6 +2666,11 @@ CharGroup::~CharGroup()
 
 bool CharGroup::UpdateFont(double inScale,bool inNative)
 {
+//fix crash on iOS 8.3+
+#if defined(IPHONE)
+   return;
+#endif
+   
    int h = 0.5 + inScale*mFormat->size;
    int flags = (mFormat->bold.Get() ? 1 : 0 ) |
                (mFormat->italic.Get() ? 2 : 0 ) |
