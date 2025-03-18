@@ -2668,7 +2668,7 @@ bool CharGroup::UpdateFont(double inScale,bool inNative)
 {
 //fix crash on iOS 8.3+
 #if defined(IPHONE)
-   return;
+   return false;
 #endif
    
    int h = 0.5 + inScale*mFormat->size;
