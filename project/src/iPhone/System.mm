@@ -51,13 +51,21 @@ bool LaunchBrowser(const char *inUtf8URL)
 	#ifndef OBJC_ARC
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     #endif
-	NSString *str = [[NSString alloc] initWithUTF8String:inUtf8URL];	
-	[[UIApplication sharedApplication] openURL:[NSURL URLWithString: str]];
+	NSString *str = [[NSString alloc] initWithUTF8String:inUtf8URL];
+	NSURL *url = [NSURL URLWithString: str];
+	
+	__block bool result = false;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		[[UIApplication sharedApplication] openURL:url options:@{} completionHandler:^(BOOL success) {
+			result = success;
+		}];
+	});
+	
 	#ifndef OBJC_ARC
 	[str release];
 	[pool drain];
     #endif
-	return true;
+	return result;
 }
 
 std::string CapabilitiesGetLanguage()
